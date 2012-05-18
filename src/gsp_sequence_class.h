@@ -12,6 +12,13 @@
 #ifndef __GSP_SEQUENCE_H__
 #define __GSP_SEQUENCE_H__
 
+#include <list>
+
+using namespace std;
+
+/* Class predefinitions */
+class GspItemset;
+
 /**
  * @class GspSequence
  *
@@ -31,7 +38,21 @@ class GspSequence
      */
     ~GspSequence();
 
+    /**
+     * @brief Add itemset to the list of itemsets_
+     *
+     * @param[in] itemset Added itemset, to which the method
+     *            owns the pointer
+     */
+    inline void add_itemset(GspItemset *itemset)
+    {
+      itemsets_.push_back(itemset);
+    }
+    
+
   private:
+
+    list<GspItemset *> itemsets_; /**< List of itemsets */
 };
 
 

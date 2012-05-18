@@ -10,6 +10,7 @@
  */
 
 #include "gsp_sequence_class.h"
+#include "gsp_itemset_class.h"
 
 /* Documented in header */
 GspSequence::GspSequence()
@@ -19,4 +20,9 @@ GspSequence::GspSequence()
 /* Documented in header */
 GspSequence::~GspSequence()
 {
+  /* Remove all itemsets added to this sequence */
+  for (list<GspItemset *>::iterator it; it != itemsets_.end(); ++it)
+  {
+    delete *it;
+  }
 }
