@@ -1,7 +1,7 @@
 /* -*- mode: cc-mode; tab-width: 2; -*- */
 
 /**
- * @file  gsp_hash_tree_class.cc
+ * @file  gsp_hashtree_class.cc
  *
  * @brief Hash Tree datatype class definition
  *

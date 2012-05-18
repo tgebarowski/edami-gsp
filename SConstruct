@@ -5,6 +5,8 @@ import os
 obj_sources = Split(
 """
 src/gsp_hashtree_class.cc
+src/gsp_sequence_class.cc
+src/gsp_itemsets_class.cc
 """)
 
 main_sources = Split(

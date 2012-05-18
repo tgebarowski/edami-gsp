@@ -1,7 +1,7 @@
 /* -*- mode: cc-mode; tab-width: 2; -*- */
 
 /**
- * @file  gsp_hash_tree_class.h
+ * @file  gsp_hashtree_class.h
  *
  * @brief Hash Tree datatype class declaration
  *
