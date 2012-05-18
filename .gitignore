@@ -1,0 +1,62 @@
+# NOTE! Don't add files that are generated in specific
+# subdirectories here. Add them in the ".gitignore" file
+# in that subdirectory instead.
+#
+# NOTE! Please use 'git ls-files -i --exclude-standard'
+# command after changing this file, to see if there are
+# any tracked files which get ignored after the change.
+
+# Normal rules
+.*
+*.gz
+*.patch
+
+# git files that we don't want to ignore even it they are dot-files
+!.gitignore
+
+# Autotools related files
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache/*
+build
+compile
+config.guess
+config.h
+config.h.in
+config.log
+config.status
+config.sub
+configure
+depcomp
+include/config.h
+include/stamp-h1
+install-sh
+libtool
+ltmain.sh
+m4/*
+missing
+stamp-h1
+debug.log
+# Executables
+
+# Other build files
+version
+version.m4
+tmp/*
+*.o
+gsp
+
+
+# quilt's files
+patches
+series
+
+# cscope files
+cscope.*
+ncscope.*
+
+debian/changelog
+*.orig
+*~
+\#*#
