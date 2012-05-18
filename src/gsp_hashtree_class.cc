@@ -8,11 +8,14 @@
  * @author: Tomasz Gebarowski <gebarowski@gmail.com>
  * @date: Fri May 18 15:14:38 2012
  */
+#include <stdio.h>
 
 #include "gsp_hashtree_class.h"
+#include "gsp_sequence_class.h"
 
 /* Documented in header */
-GspHashTree::GspHashTree()
+GspHashTree::GspHashTree(int level)
+  : level_(level)
 {
 }
 
@@ -20,3 +23,19 @@ GspHashTree::GspHashTree()
 GspHashTree::~GspHashTree()
 {
 }
+
+/* Documented in header */
+gsp_status_t 
+GspHashTree::AddSequence(GspSequence *sequence)
+{
+  return GSP_OK;
+}
+
+/* Documented in header */
+const GspSequence * 
+GspHashTree::FindSequence(GspSequence &sequence)
+{
+  return NULL;
+}
+
+
