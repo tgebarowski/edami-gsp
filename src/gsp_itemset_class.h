@@ -12,8 +12,9 @@
 #ifndef __GSP_ITEMSET_H__
 #define __GSP_ITEMSET_H__
 
-#include <list>
+#include <vector>
 #include <string>
+#include "gsp_common.h"
 
 using namespace std;
 
@@ -51,8 +52,30 @@ class GspItemset
       itemset_.push_back(item);
     }
 
+    /**
+     * @brief Get item count
+     *
+     */
+    inline int item_count()
+    {
+      return itemset_.size();
+    }
+
+    /**
+     * @brief Get Nth item from the itemset
+     *
+     * @param[in] n Index
+     */
+    string item_by_index(size_t n)
+    {
+      if (n < itemset_.size())
+        return itemset_[n];
+      return EMPTY_SET;
+    }
+    
+
   private:
-    list<string> itemset_; /**< List of string itemset */
+    vector<string> itemset_; /**< List of string itemset */
 };
 
 

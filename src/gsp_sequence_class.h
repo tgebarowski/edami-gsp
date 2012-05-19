@@ -40,6 +40,15 @@ class GspSequence
     ~GspSequence();
 
     /**
+     * @brief Get N-th item from the sequence
+     *
+     * @param[in] n Index representing N-th item from sequence
+     *
+     * @return string representing N-th item content
+     */
+    string GetItemByIndex(int n);
+
+    /**
      * @brief Get string representation of sequence
      */
     string ToString() const;

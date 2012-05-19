@@ -25,7 +25,7 @@ GspItemset::~GspItemset()
 string GspItemset::ToString() const
 {
   string out = "";
-  for (list<string>::const_iterator it = itemset_.begin();
+  for (vector<string>::const_iterator it = itemset_.begin();
        it != itemset_.end();
        ++it)
   {

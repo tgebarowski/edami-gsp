@@ -90,7 +90,6 @@ class GspHashTree
 
       private:
         int level_; /**< Level of node */
-
         node_t type_;
 
         /* Leaf node only */
@@ -98,7 +97,7 @@ class GspHashTree
         int max_sequences_; /**< Maximum number of sequences stored in a leaf */
 
         /* Interior node only */
-        vector<Node> nodes_; /**< Nodes belonging to Node */
+        vector<Node *> nodes_; /**< Nodes belonging to Node */
         /* ^^^ Should we replace it with map ? */
     };
 
