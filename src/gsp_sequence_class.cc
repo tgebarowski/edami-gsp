@@ -21,7 +21,9 @@ GspSequence::GspSequence()
 GspSequence::~GspSequence()
 {
   /* Remove all itemsets added to this sequence */
-  for (list<GspItemset *>::iterator it; it != itemsets_.end(); ++it)
+  for (list<GspItemset *>::iterator it = itemsets_.begin();
+       it != itemsets_.end();
+       ++it)
   {
     delete *it;
   }
