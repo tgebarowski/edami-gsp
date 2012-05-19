@@ -28,3 +28,17 @@ GspSequence::~GspSequence()
     delete *it;
   }
 }
+
+/* Documented in header */
+string GspSequence::ToString() const
+{
+  string out = "";
+  for (list<GspItemset *>::const_iterator it = itemsets_.begin();
+       it != itemsets_.end();
+       ++it)
+  {
+    out += "(" + (*it)->ToString() + ")" + ((std::distance(it,itemsets_.end()) != 1) ? "," : "");
+  }
+  return out;
+}
+

@@ -20,3 +20,16 @@ GspItemset::GspItemset()
 GspItemset::~GspItemset()
 {
 }
+
+/* Documented in header */
+string GspItemset::ToString() const
+{
+  string out = "";
+  for (list<string>::const_iterator it = itemset_.begin();
+       it != itemset_.end();
+       ++it)
+  {
+    out += (string)*it + ((distance(it, itemset_.end()) != 1) ? "," : "");
+  }
+  return out;  
+}

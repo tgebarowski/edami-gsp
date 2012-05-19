@@ -26,9 +26,19 @@ using boost::unit_test::test_suite;
 BOOST_AUTO_TEST_CASE(tc_hashtree_add_sequence)
 {
   GspHashTree ht(3);
-  GspSequence seq;
+  GspSequence *seq = new GspSequence();
+  GspItemset *is1 = new GspItemset();
+  GspItemset *is2 = new GspItemset();
+  is1->add_item("a");
+  is1->add_item("b");
+  is2->add_item("c");
+  
+  seq->add_itemset(is1);
+  seq->add_itemset(is2);
 
-  //  BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq));
+  cout << "Input sequence: " + seq->ToString() << endl;
+
+  BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq));
 }
 
 /**

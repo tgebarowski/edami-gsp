@@ -37,6 +37,11 @@ class GspItemset
     ~GspItemset();
 
     /**
+     * @brief Get string representation of itemset
+     */
+    string ToString() const;
+
+    /**
      * @brief Add item by appending it to the end of itemset
      *
      * @param[in] item String representing appended item

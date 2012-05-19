@@ -13,6 +13,7 @@
 #define __GSP_SEQUENCE_H__
 
 #include <list>
+#include <string>
 
 using namespace std;
 
@@ -37,6 +38,13 @@ class GspSequence
      * @brief Destroys Sequence object
      */
     ~GspSequence();
+
+    /**
+     * @brief Get string representation of sequence
+     */
+    string ToString() const;
+
+    /* Inline members */
 
     /**
      * @brief Add itemset to the list of itemsets_
