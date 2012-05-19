@@ -71,27 +71,35 @@ class GspHashTree
      */
     class Node
     {
-    };
+      typedef enum 
+      {
+        NODE_INTERIOR = 0,
+        NODE_LEAF
+      } node_t;
 
-    /**
-     * @brief Representation of a leaf in HashTree
-     */
-    class Leaf : Node
-    {
       public:
+        /**
+         * @brief Node constructor
+         *
+         * @param[in] level Level of node
+         * @param[in] type Type of created node
+         *                 NODE_LEAF, NODE_INTERIOR
+         */
+        Node(int level, node_t type)
+          : level_(level) {};
 
       private:
+        int level_; /**< Level of node */
+
+        node_t type_;
+
+        /* Leaf node only */
         list<GspSequence *> sequences_; /**< Sequences stored in a leaf */
         int max_sequences_; /**< Maximum number of sequences stored in a leaf */
-    };
 
-    /**
-     * @brief Representation of a interior node in HashTree
-     */
-    class Interior : Node
-    {
-      vector<Node> nodes_; /**< Nodes belonging to InteriorNode */
-                           /* ? Should we replace it with map ? */
+        /* Interior node only */
+        vector<Node> nodes_; /**< Nodes belonging to Node */
+        /* ^^^ Should we replace it with map ? */
     };
 
     int level_; /**< HashTree maximum level */
