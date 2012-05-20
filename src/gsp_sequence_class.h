@@ -49,6 +49,32 @@ class GspSequence
     string GetItemByIndex(int n);
 
     /**
+     * @brief Compare this GspSequence (s1) with another provided as argument (s2)
+     *        If a subsequence s1' obtained from s1 by droping first item
+     *        is equal to a subsequence s2' obtained from s2 by droping last item
+     *        then the method return TRUE.
+     *        Otherwise it returns always false
+     *
+     * @param[in] s2 Second subsequence used for comparision
+     *
+     * @return True if above condition is satisfied, otherwise false
+     */
+    bool CompareWithSubsequence(GspSequence *s2);
+
+    /**
+     * @brief Join GspSequence represented by this object (s1)
+     *        with an GspItemset provided in the argument
+     *        If GspItemset is a separate element then this element
+     *        will constitute to the last itemset of s1.
+     *        Otherwise it will be appended as a separate itemset to s1
+     *
+     * @param[in] itemset GspItemset to be appended
+     *
+     * @return True if above condition is satisfied, otherwise false
+     */
+    bool AppendItemset(GspItemset *itemset);
+
+    /**
      * @brief Get string representation of sequence
      */
     string ToString() const;
@@ -65,7 +91,14 @@ class GspSequence
     {
       itemsets_.push_back(itemset);
     }
-    
+
+    /**
+     * @brief Get last Itemset from GspSequence
+     */
+    inline GspItemset * get_last_itemset()
+    {
+      return itemsets_.back();
+    }
 
   private:
 

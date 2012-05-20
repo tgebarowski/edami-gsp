@@ -51,6 +51,20 @@ string GspSequence::GetItemByIndex(int n)
   return EMPTY_SET;
 }
 
+/* Documented in header */
+bool GspSequence::CompareWithSubsequence(GspSequence *s2)
+{
+  /** TODO: Implement me */
+  return false;
+}
+
+/* Documented in header */
+bool GspSequence::AppendItemset(GspItemset *itemset)
+{
+  /** TODO: Implement me */  
+  return false;
+}
+
 
 /* Documented in header */
 string GspSequence::ToString() const
