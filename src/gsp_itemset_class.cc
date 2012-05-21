@@ -17,6 +17,18 @@ GspItemset::GspItemset()
 }
 
 /* Documented in header */
+GspItemset::GspItemset(const GspItemset &src)
+{
+  for (vector<string>::const_iterator it = src.itemset_.begin();
+       it != src.itemset_.end();
+       ++it)
+  {
+    itemset_.push_back(*it);
+  }
+}
+
+
+/* Documented in header */
 GspItemset::~GspItemset()
 {
 }

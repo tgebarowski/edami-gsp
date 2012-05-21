@@ -55,6 +55,40 @@ BOOST_AUTO_TEST_CASE(tc_sequence_primitives)
   }
 }
 
+/**
+ * @brief Test Case for Sequence->CompareWithSubsequence
+ */
+BOOST_AUTO_TEST_CASE(tc_sequence_compare)
+{
+  GspHashTree ht(3);
+  GspSequence *seq = new GspSequence();
+  GspSequence *seq2= new GspSequence();
+  GspItemset *is1 = new GspItemset();
+  GspItemset *is2 = new GspItemset();
+  GspItemset *is3 = new GspItemset();
+  GspItemset *is4 = new GspItemset();
+  is1->add_item("a");
+  is1->add_item("b");
+  is2->add_item("c");
+  is2->add_item("d");
+
+  is3->add_item("b");
+  is4->add_item("c");
+  is4->add_item("d");
+  is4->add_item("e");
+  
+  seq->add_itemset(is1);
+  seq->add_itemset(is2);
+
+  seq2->add_itemset(is3);
+  seq2->add_itemset(is4);
+
+  cout << "Input sequence (s1): " + seq->ToString() << endl;
+  cout << "Input sequence (s2): " + seq2->ToString() << endl;
+
+  BOOST_CHECK_EQUAL(true, seq->CompareWithSubsequence(*seq2));
+}
+
 
 /**
  * @brief Test Case for HashTree->AddSequence

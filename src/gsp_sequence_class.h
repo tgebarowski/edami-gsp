@@ -35,6 +35,13 @@ class GspSequence
     GspSequence();
 
     /**
+     * @brief Copy constructor
+     *
+     * @param[in] src source object
+     */
+    GspSequence(const GspSequence &src);
+
+    /**
      * @brief Destroys Sequence object
      */
     ~GspSequence();
@@ -59,7 +66,7 @@ class GspSequence
      *
      * @return True if above condition is satisfied, otherwise false
      */
-    bool CompareWithSubsequence(GspSequence *s2);
+    bool CompareWithSubsequence(GspSequence &s2);
 
     /**
      * @brief Join GspSequence represented by this object (s1)
@@ -79,6 +86,14 @@ class GspSequence
      */
     string ToString() const;
 
+
+    /* Operators */
+
+    /**
+     * @brief Equal operator
+     */
+    bool operator==(const GspSequence &other) const;
+
     /* Inline members */
 
     /**
@@ -90,6 +105,14 @@ class GspSequence
     inline void add_itemset(GspItemset *itemset)
     {
       itemsets_.push_back(itemset);
+    }
+
+    /**
+     * @brief Get last Itemset from GspSequence
+     */
+    inline GspItemset * get_first_itemset()
+    {
+      return itemsets_.front();
     }
 
     /**

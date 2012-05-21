@@ -33,6 +33,13 @@ class GspItemset
     GspItemset();
 
     /**
+     * @brief Copy constructor
+     *
+     * @param[in] src Source object
+     */
+    GspItemset(const GspItemset &src);
+
+    /**
      * @brief Destroys Itemset object
      */
     ~GspItemset();
@@ -50,6 +57,22 @@ class GspItemset
     inline void add_item(string item) 
     {
       itemset_.push_back(item);
+    }
+    
+    /**
+     * @brief Remove first item in this itemset 
+     */
+    inline void remove_first_item()
+    {
+      itemset_.erase(itemset_.begin(), itemset_.begin()+1);
+    }
+    
+    /**
+     * @brief Remove last item in this itemset 
+     */
+    inline void remove_last_item()
+    {
+      itemset_.pop_back();
     }
 
     /**

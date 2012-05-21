@@ -19,6 +19,18 @@ GspSequence::GspSequence()
 }
 
 /* Documented in header */
+GspSequence::GspSequence(const GspSequence &src)
+{
+  for (list<GspItemset *>::const_iterator it = src.itemsets_.begin();
+       it != src.itemsets_.end();
+       ++it)
+  {
+    itemsets_.push_back(new GspItemset(**it));
+  }
+}
+
+
+/* Documented in header */
 GspSequence::~GspSequence()
 {
   /* Remove all itemsets added to this sequence */
@@ -52,10 +64,25 @@ string GspSequence::GetItemByIndex(int n)
 }
 
 /* Documented in header */
-bool GspSequence::CompareWithSubsequence(GspSequence *s2)
+bool GspSequence::CompareWithSubsequence(GspSequence &s)
 {
-  /** TODO: Implement me */
-  return false;
+  GspSequence s1(*this);
+  GspSequence s2(s);
+
+  GspItemset *s1_itemset_first = s1.get_first_itemset();
+  GspItemset *s2_itemset_last = s2.get_last_itemset();
+  
+  /* Remove first item from first sequence */
+  if (s1_itemset_first != NULL)
+  {
+    s1_itemset_first->remove_first_item();
+  }
+  /* Remove last item from last sequence */
+  if (s2_itemset_last != NULL)
+  {
+    s2_itemset_last->remove_last_item();
+  }
+  return (s1 == s2);
 }
 
 /* Documented in header */
@@ -80,3 +107,10 @@ string GspSequence::ToString() const
   return out;
 }
 
+/* Operators */
+
+/* Documented in header */
+bool GspSequence::operator==(const GspSequence &other) const
+{
+  return (this->ToString() == other.ToString());
+}
