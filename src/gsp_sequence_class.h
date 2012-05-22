@@ -75,11 +75,9 @@ class GspSequence
      *        will constitute to the last itemset of s1.
      *        Otherwise it will be appended as a separate itemset to s1
      *
-     * @param[in] itemset GspItemset to be appended
-     *
-     * @return True if above condition is satisfied, otherwise false
+     * @param[in] itemset GspItemset to be appended, owned by GspSequence
      */
-    bool AppendItemset(GspItemset *itemset);
+    void AppendItemset(GspItemset *itemset);
 
     /**
      * @brief Get string representation of sequence

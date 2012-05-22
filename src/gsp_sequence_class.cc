@@ -86,10 +86,25 @@ bool GspSequence::CompareWithSubsequence(GspSequence &s)
 }
 
 /* Documented in header */
-bool GspSequence::AppendItemset(GspItemset *itemset)
+void GspSequence::AppendItemset(GspItemset *itemset)
 {
-  /** TODO: Implement me */  
-  return false;
+  if (itemset != NULL)
+  {
+    /** Append to existing last itemset */
+    if (itemset->item_count() == 1)
+    {
+      GspItemset *last_itemset = get_last_itemset();
+      if (last_itemset != NULL)
+      {
+        last_itemset->add_item(itemset->item_by_index(0));
+      }
+    }
+    /** Append as separate itemset */
+    else if (itemset->item_count() > 1)
+    {
+      itemsets_.push_back(itemset);
+    }
+  }
 }
 
 

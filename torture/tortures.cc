@@ -56,6 +56,45 @@ BOOST_AUTO_TEST_CASE(tc_sequence_primitives)
 }
 
 /**
+ * @brief Test Case for Sequence->AppendItemset
+ */
+BOOST_AUTO_TEST_CASE(tc_sequence_append_itemset)
+{
+  GspSequence *seq = new GspSequence();
+  GspItemset *is1 = new GspItemset();
+  GspItemset *is2 = new GspItemset();
+  GspItemset *appended_1 = new GspItemset();
+  GspItemset *appended_2 = new GspItemset();
+  is1->add_item("a");
+  is1->add_item("b");
+  is2->add_item("c");
+  is2->add_item("d");
+
+  seq->add_itemset(is1);
+  seq->add_itemset(is2);
+
+  appended_1->add_item("e");
+  appended_2->add_item("f");
+  appended_2->add_item("g");
+
+  cout << "Input sequence: " << seq->ToString() << endl;
+  seq->AppendItemset(appended_1);
+
+  cout << "After appending " << appended_1->ToString()\
+       << ": " << seq->ToString() << endl;
+
+  /* Remove previously appended item */
+  is2->remove_last_item();
+
+  cout << "Input sequence: " << seq->ToString() << endl;
+  seq->AppendItemset(appended_2);
+
+  cout << "After appending " << appended_2->ToString()\
+       << ": " << seq->ToString() << endl;
+}
+
+
+/**
  * @brief Test Case for Sequence->CompareWithSubsequence
  */
 BOOST_AUTO_TEST_CASE(tc_sequence_compare)
