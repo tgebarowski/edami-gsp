@@ -14,8 +14,8 @@
 #include "gsp_sequence_class.h"
 
 /* Documented in header */
-GspHashTree::GspHashTree(int level)
-  : level_(level)
+GspHashTree::GspHashTree(int max_level)
+  : max_level_(max_level)
 {
 }
 
@@ -28,6 +28,13 @@ GspHashTree::~GspHashTree()
 gsp_status_t 
 GspHashTree::AddSequence(GspSequence *sequence)
 {
+  /** If HashTree is empty */
+  if (root_ == NULL)
+  {
+    root_ = new Node();
+  }
+  root_->SetSequence(sequence);
+  
   return GSP_OK;
 }
 

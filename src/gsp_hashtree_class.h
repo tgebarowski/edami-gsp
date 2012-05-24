@@ -78,6 +78,14 @@ class GspHashTree
       } node_t;
 
       public:
+
+        /** 
+         * @brief Create root node
+         */
+        Node()
+          : level_(0),
+            type_(NODE_LEAF) {}
+
         /**
          * @brief Node constructor
          *
@@ -88,20 +96,69 @@ class GspHashTree
         Node(int level, node_t type)
           : level_(level) {};
 
+        /**
+         * @brief Set GspSequence stored in Node
+         *
+         * @param[in] sequence Pointer to GspSequence *
+         */
+        void SetSequence(GspSequence *sequence)
+        {
+          if (type_ == NODE_LEAF)
+          {
+            if (nodes_.size() < max_sequences_)
+              sequences_.push_back(sequence);
+            else
+              TransformToInterior(sequence);
+          }
+        }
+
+        /**
+         * @brief Add new interior leaf
+         */
+        void AddLeaf(GspSequence *sequence)
+        {
+          int hash = 0; // hash(sequence, level_)
+          if (nodes_[hash] == NULL)
+            nodes_[hash] = new Node(++level_, NODE_LEAF);
+          
+          nodes_[hash]->SetSequence(sequence);          
+        }
+
+        /**
+         * @brief Transform node from Leaf to Interior
+         */
+        void TransformToInterior(GspSequence *sequence)
+        {
+          if (type_ == NODE_LEAF)
+          {
+            type_ =  NODE_INTERIOR;
+
+            for (list<GspSequence *>::iterator it = sequences_.begin();
+                 it != sequences_.end();
+                 ++it)
+            {
+              AddLeaf(*it);
+            }
+            AddLeaf(sequence);
+          }
+        }
+        
+
       private:
         int level_; /**< Level of node */
         node_t type_;
 
         /* Leaf node only */
         list<GspSequence *> sequences_; /**< Sequences stored in a leaf */
-        int max_sequences_; /**< Maximum number of sequences stored in a leaf */
+        unsigned int max_sequences_; /**< Maximum number of sequences stored in a leaf */
 
         /* Interior node only */
         vector<Node *> nodes_; /**< Nodes belonging to Node */
         /* ^^^ Should we replace it with map ? */
     };
 
-    int level_; /**< HashTree maximum level */
+    unsigned int max_level_; /**< HashTree maximum level */
+    Node * root_; /**< HashTree root */
 };
 
 
