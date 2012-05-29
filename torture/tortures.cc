@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(tc_sequence_append_itemset)
  */
 BOOST_AUTO_TEST_CASE(tc_sequence_compare)
 {
-  GspHashTree ht(3);
+  GspHashTree ht(2,2);
   GspSequence *seq = new GspSequence();
   GspSequence *seq2= new GspSequence();
   GspItemset *is1 = new GspItemset();
@@ -134,20 +134,38 @@ BOOST_AUTO_TEST_CASE(tc_sequence_compare)
  */
 BOOST_AUTO_TEST_CASE(tc_hashtree_add_sequence)
 {
-  GspHashTree ht(3);
+  GspHashTree ht(2, /* max  level */
+                 2 /* max leaf */);
   GspSequence *seq = new GspSequence();
+  GspSequence *seq2 = new GspSequence();
+  GspSequence *seq3 = new GspSequence();
+  GspSequence *seq4 = new GspSequence();
   GspItemset *is1 = new GspItemset();
   GspItemset *is2 = new GspItemset();
+  GspItemset *is3 = new GspItemset();
   is1->add_item("a");
   is1->add_item("b");
   is2->add_item("c");
+  is3->add_item("c");
+  is3->add_item("d");
+  is3->add_item("e");
   
   seq->add_itemset(is1);
   seq->add_itemset(is2);
 
+  seq2->add_itemset(is1);
+
+  seq3->add_itemset(is2);
+
+  seq4->add_itemset(is2);
+  seq4->add_itemset(is3);
+
   cout << "Input sequence: " + seq->ToString() << endl;
 
   BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq));
+  BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq2));
+  BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq3));
+  BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq4));
 }
 
 /**
@@ -155,8 +173,45 @@ BOOST_AUTO_TEST_CASE(tc_hashtree_add_sequence)
  */
 BOOST_AUTO_TEST_CASE(tc_hashtree_find_sequence)
 {
-  GspHashTree ht(3);
-  GspSequence seq;  
+  GspHashTree ht(2, /* max  level */
+                 2 /* max leaf */);
+  GspSequence *seq = new GspSequence();
+  GspSequence *seq2 = new GspSequence();
+  GspSequence *seq3 = new GspSequence();
+  GspSequence *seq4 = new GspSequence();
+  GspItemset *is1 = new GspItemset();
+  GspItemset *is2 = new GspItemset();
+  GspItemset *is3 = new GspItemset();
+  is1->add_item("a");
+  is1->add_item("b");
+  is2->add_item("c");
+  is3->add_item("c");
+  is3->add_item("d");
+  is3->add_item("e");
+  
+  seq->add_itemset(is1);
+  seq->add_itemset(is2);
+
+  seq2->add_itemset(is1);
+
+  seq3->add_itemset(is2);
+
+  seq4->add_itemset(is2);
+  seq4->add_itemset(is3);
+
+  BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq));
+  BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq2));
+  BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq3));
+  BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq4));
+
+  cout << "Looking for: " << seq2->ToString() << endl;
+
+  const GspSequence *found = ht.FindSequence(*seq2);
+  
+  if (found != NULL)
+  {
+    cout << "Found: " << found->ToString() << endl;
+  }
 }
 
 

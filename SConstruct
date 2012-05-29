@@ -41,7 +41,7 @@ def MakeEnvironment():
     env.Append(CPPPATH=['src/',       
                         '/usr/include/c++/4.6.1/',
                         '/usr/include/c++/4.6.1/x86_64-linux-gnu'])
-    env.Append(CPPFLAGS=['-Werror', '-Wall', '-pedantic', '-Wno-long-long'] )
+    env.Append(CPPFLAGS=['-Werror', '-Wall', '-pedantic', '-Wno-long-long' '-g'] )
 
     return env
 
