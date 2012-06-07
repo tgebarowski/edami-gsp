@@ -4,9 +4,11 @@ import os
 
 obj_sources = Split(
 """
+src/gsp_datastore_class.cc
 src/gsp_hashtree_class.cc
 src/gsp_sequence_class.cc
 src/gsp_itemset_class.cc
+src/gsp_common.cc
 """)
 
 main_sources = Split(

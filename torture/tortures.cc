@@ -19,6 +19,7 @@ using boost::unit_test::test_suite;
 #include "gsp_hashtree_class.h"
 #include "gsp_sequence_class.h"
 #include "gsp_itemset_class.h"
+#include "gsp_datastore_class.h"
 
 /**
  * @brief Test Case for GspSequence primitives
@@ -213,5 +214,27 @@ BOOST_AUTO_TEST_CASE(tc_hashtree_find_sequence)
     cout << "Found: " << found->ToString() << endl;
   }
 }
+
+/**
+ * @brief Test Case for DataStore
+ */
+BOOST_AUTO_TEST_CASE(tc_datastore)
+{
+  GspDataStore ds("test.dat");
+  
+  GspItemset *itemset = NULL;
+
+  cout << "Testing Data Store..." << endl;
+  
+  while ((itemset = ds.GetNextItemset()) != NULL)
+  {
+    cout << "ID: " << itemset->get_id() << " timestamp: "\
+         << itemset->get_timestamp() << " ";
+    cout << itemset->ToString() << endl;
+  }
+
+  cout << "End of Data Store testing..." << endl;
+}
+
 
 
