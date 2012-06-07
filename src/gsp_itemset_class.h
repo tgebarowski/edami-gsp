@@ -29,8 +29,13 @@ class GspItemset
 
     /**
      * @brief Constructs Itemset object
+     *
+     * @param[in] id String representing ID of user generating this itemset
+     * @param[in] timestamp Timestamp
+     *
      */
-    GspItemset();
+    GspItemset(string id = "", 
+               int timestamp = 0);
 
     /**
      * @brief Copy constructor
@@ -95,9 +100,27 @@ class GspItemset
         return itemset_[n];
       return EMPTY_SET;
     }
+
+    /**
+     * @brief Get ID
+     */
+    inline string get_id()
+    {
+      return id_;
+    }
+
+    /**
+     * @brief Get timestamp
+     */
+    inline int get_timestamp()
+    {
+      return timestamp_;
+    }
     
 
   private:
+    string id_; /**< Identifier of User generating this sequence  */
+    int timestamp_; /**< Timestamp */
     vector<string> itemset_; /**< List of string itemset */
 };
 

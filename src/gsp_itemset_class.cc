@@ -12,7 +12,10 @@
 #include "gsp_itemset_class.h"
 
 /* Documented in header */
-GspItemset::GspItemset()
+GspItemset::GspItemset(string id,
+                       int timestamp)
+  : id_(id),
+    timestamp_(timestamp)
 {
 }
 
@@ -25,6 +28,8 @@ GspItemset::GspItemset(const GspItemset &src)
   {
     itemset_.push_back(*it);
   }
+  id_ = src.id_;
+  timestamp_ = src.timestamp_;
 }
 
 
