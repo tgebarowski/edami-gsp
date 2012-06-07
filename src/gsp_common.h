@@ -15,6 +15,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <vector>
 using namespace std;
 
 /**
@@ -88,5 +89,16 @@ inline string ToHex(const unsigned int value)
     return (out.str());
 
 }
+
+/**
+ * @brief Tokenize string based on delimeter character
+ *
+ * @param[in] line string to be tokenized
+ * @param[in] delimeter Used delimeter
+ *
+ * @return Vector of tokens
+ */
+vector<string> * Tokenize(string line,
+                          char delimeter);
 
 #endif /* __GSP_COMMON_H__ */
