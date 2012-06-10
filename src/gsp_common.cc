@@ -12,21 +12,21 @@
 #include "gsp_common.h"
 
 /* Documented in header */
-vector<string> * Tokenize(string line,
+std::vector<std::string> * Tokenize(std::string line,
                           char delimeter)
 {
     /* Constants */
     static const size_t kNpos = -1;
 
     /* @brief Vector of read tokens */
-    vector<string> *tokens = new vector<string>();
+    std::vector<std::string> *tokens = new std::vector<std::string>();
 
     do {
-        string::size_type current_index = line.find_first_of(delimeter);
+        std::string::size_type current_index = line.find_first_of(delimeter);
 
         if (current_index != kNpos )
         {
-            string token = line.substr(0,
+            std::string token = line.substr(0,
                                        current_index);
 
             /* Append token to  vector */

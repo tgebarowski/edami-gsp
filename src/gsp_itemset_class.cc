@@ -10,26 +10,21 @@
  */
 
 #include "gsp_itemset_class.h"
+#include <sstream>
 
 /* Documented in header */
-GspItemset::GspItemset(string id,
+GspItemset::GspItemset(//string id,
                        int timestamp)
-  : id_(id),
-    timestamp_(timestamp)
+  : //id_(id),
+    timestamp_(timestamp), itemset_(), iter(itemset_.begin())
 {
 }
 
 /* Documented in header */
 GspItemset::GspItemset(const GspItemset &src)
+  : timestamp_(src.timestamp_), itemset_(src.itemset_), iter(itemset_.begin())
 {
-  for (vector<string>::const_iterator it = src.itemset_.begin();
-       it != src.itemset_.end();
-       ++it)
-  {
-    itemset_.push_back(*it);
-  }
-  id_ = src.id_;
-  timestamp_ = src.timestamp_;
+
 }
 
 
@@ -38,15 +33,18 @@ GspItemset::~GspItemset()
 {
 }
 
+//TODO stringstream
 /* Documented in header */
-string GspItemset::ToString() const
+std::string GspItemset::ToString() const
 {
-  string out = "";
-  for (vector<string>::const_iterator it = itemset_.begin();
-       it != itemset_.end();
-       ++it)
+  unsigned size = itemset_.size();
+  std::stringstream strStream;
+  for(std::set<std::string>::const_iterator it = itemset_.begin(); it != itemset_.end(); ++it)
   {
-    out += (string)*it + ((distance(it, itemset_.end()) != 1) ? "," : "");
+    strStream<<*it;
+    if (size-- > 1)
+      strStream<<",";
   }
-  return out;  
+
+  return strStream.str();
 }

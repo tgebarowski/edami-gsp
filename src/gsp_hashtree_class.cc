@@ -12,6 +12,7 @@
 
 #include "gsp_hashtree_class.h"
 #include "gsp_sequence_class.h"
+#include "gsp_common.h"
 
 /* Documented in header */
 GspHashTree::GspHashTree(int max_level,

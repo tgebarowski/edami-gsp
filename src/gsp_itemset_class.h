@@ -12,11 +12,12 @@
 #ifndef __GSP_ITEMSET_H__
 #define __GSP_ITEMSET_H__
 
-#include <vector>
+//#include <vector>
+#include <set>
 #include <string>
 #include "gsp_common.h"
 
-using namespace std;
+//using namespace std;
 
 /**
  * @class GspItemset
@@ -34,7 +35,7 @@ class GspItemset
      * @param[in] timestamp Timestamp
      *
      */
-    GspItemset(string id = "", 
+    GspItemset(//string id = "",
                int timestamp = 0);
 
     /**
@@ -42,8 +43,8 @@ class GspItemset
      *
      * @param[in] src Source object
      */
+    //TODO just use the vector CC?
     GspItemset(const GspItemset &src);
-
     /**
      * @brief Destroys Itemset object
      */
@@ -52,33 +53,39 @@ class GspItemset
     /**
      * @brief Get string representation of itemset
      */
-    string ToString() const;
+    std::string ToString() const;
 
     /**
      * @brief Add item by appending it to the end of itemset
      *
      * @param[in] item String representing appended item
      */
-    inline void add_item(string item) 
+    inline void add_item(std::string item)
     {
-      itemset_.push_back(item);
+      itemset_.insert(item);
     }
     
     /**
      * @brief Remove first item in this itemset 
      */
+    /*
+     * TODO needed?
+     *
     inline void remove_first_item()
     {
       itemset_.erase(itemset_.begin(), itemset_.begin()+1);
     }
+    */
     
     /**
      * @brief Remove last item in this itemset 
      */
+    /* TODO needed?
     inline void remove_last_item()
     {
       itemset_.pop_back();
     }
+    */
 
     /**
      * @brief Get item count
@@ -94,20 +101,24 @@ class GspItemset
      *
      * @param[in] n Index
      */
+    /*
     string item_by_index(size_t n)
     {
       if (n < itemset_.size())
         return itemset_[n];
       return EMPTY_SET;
     }
+    */
 
     /**
      * @brief Get ID
      */
+    /*
     inline string get_id()
     {
       return id_;
     }
+    */
 
     /**
      * @brief Get timestamp
@@ -117,11 +128,35 @@ class GspItemset
       return timestamp_;
     }
     
+    void rewind()
+    {
+      iter = itemset_.begin();
+    }
+
+    std::string next()
+    {
+      if (iter == itemset_.end())
+        return "";
+
+      return *iter++;
+    }
+
+    std::set<std::string>::const_iterator begin()
+    {
+      return itemset_.begin();
+    }
+
+    std::set<std::string>::const_iterator end()
+    {
+      return itemset_.end();
+    }
 
   private:
-    string id_; /**< Identifier of User generating this sequence  */
+//    string id_; /**< Identifier of User generating this sequence  */
     int timestamp_; /**< Timestamp */
-    vector<string> itemset_; /**< List of string itemset */
+    //vector<string> itemset_; /**< List of string itemset */
+    std::set<std::string> itemset_;
+    std::set<std::string>::const_iterator iter;
 };
 
 

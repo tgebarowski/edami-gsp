@@ -32,7 +32,7 @@ class GspSequence
     /**
      * @brief Constructs Sequence object
      */
-    GspSequence();
+    GspSequence(const string &id_);
 
     /**
      * @brief Copy constructor
@@ -105,6 +105,8 @@ class GspSequence
       itemsets_.push_back(itemset);
     }
 
+
+
     /**
      * @brief Get last Itemset from GspSequence
      */
@@ -121,9 +123,41 @@ class GspSequence
       return itemsets_.back();
     }
 
+    void rewind()
+    {
+      iter = itemsets_.begin();
+    }
+
+    GspItemset *nextItemset()
+    {
+      if (iter == itemsets_.end())
+         return NULL;
+
+      return *iter++;
+    }
+
+    void increaseSupport()
+    {
+      ++support;
+    }
+
+    unsigned getSupport()
+    {
+      return support;
+    }
+
+    void setSupport(unsigned support_)
+    {
+      support = support_;
+    }
+
   private:
 
     list<GspItemset *> itemsets_; /**< List of itemsets */
+    list<GspItemset *>::iterator iter;
+    string id;
+    unsigned support;
+
 };
 
 

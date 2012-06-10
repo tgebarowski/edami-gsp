@@ -16,7 +16,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
-using namespace std;
+//using namespace std;
 
 /**
  * @brief Useful macro defining empty set
@@ -39,9 +39,9 @@ typedef enum
  * @brief Conversion to string
  */
 template < class T >
-inline string ToString(const T &arg)
+inline std::string ToString(const T &arg)
 {
-    ostringstream	out(std::ios_base::out);
+    std::ostringstream	out(std::ios_base::out);
     out << arg;
     return(out.str());
 }
@@ -49,10 +49,10 @@ inline string ToString(const T &arg)
 /**
  * @brief Conversion from string to integer
  */
-inline int ToInt(const string &arg)
+inline int ToInt(const std::string &arg)
 {
     int i = 0;
-    stringstream iss(arg);
+    std::stringstream iss(arg);
     iss >> i;
     return i;
 }
@@ -60,7 +60,7 @@ inline int ToInt(const string &arg)
 /**
  * @brief Conversion from string to integer
  */
-inline bool ToBool(const string &arg)
+inline bool ToBool(const std::string &arg)
 {
     if (arg == "yes" || arg == "YES" || arg == "On" || arg == "on")
         return true;
@@ -70,10 +70,10 @@ inline bool ToBool(const string &arg)
 /**
  * @brief Conversion from string to double
  */
-inline double ToDouble(const string &arg)
+inline double ToDouble(const std::string &arg)
 {
     double d = 0;
-    stringstream iss(arg);
+    std::stringstream iss(arg);
     iss >> d;
     return d;
 }
@@ -81,9 +81,9 @@ inline double ToDouble(const string &arg)
 /**
  * @brief Conversion from int to string (hex)
  */
-inline string ToHex(const unsigned int value)
+inline std::string ToHex(const unsigned int value)
 {
-    ostringstream out;
+    std::ostringstream out;
 
     out << std::hex << value;
     return (out.str());
@@ -98,7 +98,7 @@ inline string ToHex(const unsigned int value)
  *
  * @return Vector of tokens
  */
-vector<string> * Tokenize(string line,
+std::vector<std::string> * Tokenize(std::string line,
                           char delimeter);
 
 #endif /* __GSP_COMMON_H__ */

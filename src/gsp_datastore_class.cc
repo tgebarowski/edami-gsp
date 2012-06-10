@@ -43,7 +43,10 @@ GspItemset * GspDataStore::GetNextItemset()
       
       vector<string> * seq_tokens = Tokenize((*tokens)[2], ',');
 
-      itemset = new GspItemset(id, ToInt(timestamp));
+      //TODO ogarnac ID
+      itemset = new GspItemset(
+//          id,
+          ToInt(timestamp));
 
       if (seq_tokens != NULL)
       {
