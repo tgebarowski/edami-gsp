@@ -6,7 +6,7 @@ obj_sources = Split(
 """
 src/gsp_algorithm.cc
 src/gsp_sequence_pool.cc
-src/gsp_datastore_class.cc
+src/gsp_file_reader_class.cc
 src/gsp_hashtree_class.cc
 src/gsp_sequence_class.cc
 src/gsp_itemset_class.cc

@@ -229,13 +229,13 @@ BOOST_AUTO_TEST_CASE(tc_hashtree_find_sequence)
  */
 BOOST_AUTO_TEST_CASE(tc_datastore)
 {
-  GspDataStore ds("test.dat");
+  GspFileReader fr("test.dat");
   
   GspSequence *sequence = NULL;
 
   cout << "Testing Data Store..." << endl;
   
-  while ((sequence = ds.GetNextSequence()) != NULL)
+  while ((sequence = fr.GetNextSequence()) != NULL)
   {
     cout << "ID:" << sequence->getId() << " "\
          << sequence->ToString() << endl;

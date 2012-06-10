@@ -1,16 +1,16 @@
 /* -*- mode: cc-mode; tab-width: 2; -*- */
 
 /**
- * @file  gsp_datastore_class.h
+ * @file  gsp_file_reader_class.h
  *
- * @brief DataStore representation
+ * @brief File Reader representation
  *
  * @author: Tomasz Gebarowski <gebarowski@gmail.com>
  * @date: Thu Jun 07 18:08:22 2012
  */
 
-#ifndef __GSP_DATASTORE_H__
-#define __GSP_DATASTORE_H__
+#ifndef __GSP_FILE_READER_H__
+#define __GSP_FILE_READER_H__
 
 #include <vector>
 #include <string>
@@ -27,7 +27,7 @@ class GspItemset;
 class GspSequence;
 
 /**
- * @class GspDataStore
+ * @class GspFileReader
  *
  * @brief Class Data Store object used for iterating through data file
  *
@@ -44,7 +44,7 @@ class GspSequence;
  *
  * Fields are separated by '#' symbol, while corresponding items with coma ','
  */
-class GspDataStore : GspSequenceReader
+class GspFileReader : GspSequenceReader
 {
   public:
 
@@ -53,12 +53,12 @@ class GspDataStore : GspSequenceReader
      *
      * @param[in] file_path Pointer to file with data
      */
-    GspDataStore(string file_path);
+    GspFileReader(string file_path);
 
     /**
      * @brief Destroys Itemset object
      */
-    virtual ~GspDataStore();
+    virtual ~GspFileReader();
 
     /**
      * @brief Rewinds stream
@@ -89,4 +89,4 @@ class GspDataStore : GspSequenceReader
 };
 
 
-#endif /* __GSP_DATASTORE_H__ */
+#endif /* __GSP_FILE_READER_H__ */

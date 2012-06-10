@@ -1,40 +1,40 @@
 /* -*- mode: cc-mode; tab-width: 2; -*- */
 
 /**
- * @file  gsp_datastore_class.cc
+ * @file  gsp_file_reader_class.cc
  *
- * @brief DataStore representation
+ * @brief File Reader representation
  *
  * @author: Tomasz Gebarowski <gebarowski@gmail.com>
  * @date: Thu Jun 07 18:08:22 2012
  */
 
-#include "gsp_datastore_class.h"
+#include "gsp_file_reader_class.h"
 #include "gsp_itemset_class.h"
 #include "gsp_sequence_class.h"
 #include "gsp_common.h"
 
 /* Documented in header */
-GspDataStore::GspDataStore(string file_path)
+GspFileReader::GspFileReader(string file_path)
   : input_file_(file_path.c_str())
 {
   line_iterator_ = input_file_;
 }
 
 /* Documented in header */
-GspDataStore::~GspDataStore()
+GspFileReader::~GspFileReader()
 {
 }
 
 /* Documented in header */
-bool GspDataStore::RewindStream()
+bool GspFileReader::RewindStream()
 {
 
   return true;
 }
 
 /* Documented in header */
-GspSequence *GspDataStore::GetNextSequence()
+GspSequence *GspFileReader::GetNextSequence()
 {
   string id = "", old_id = "";
   GspSequence *sequence = NULL;
@@ -58,7 +58,7 @@ GspSequence *GspDataStore::GetNextSequence()
 
 
 /* Documented in header */
-GspItemset * GspDataStore::GetNextItemset(string &p_id)
+GspItemset * GspFileReader::GetNextItemset(string &p_id)
 {
   GspItemset *itemset = NULL;
   istream_iterator<string> eol;
