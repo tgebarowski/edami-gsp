@@ -105,8 +105,6 @@ class GspSequence
       itemsets_.push_back(itemset);
     }
 
-
-
     /**
      * @brief Get last Itemset from GspSequence
      */
@@ -150,6 +148,14 @@ class GspSequence
     {
       support = support_;
     }
+
+    GspSequence *joinSequences(GspSequence *right);
+
+    void dropFirstItem();
+
+    void dropLastItem();
+
+    void appendSequence(GspSequence *right);
 
   private:
 

@@ -118,7 +118,46 @@ GspSequence::~GspSequence()
 //  }
 //}
 
-//TODO - stringstream
+GspSequence *GspSequence::joinSequences(GspSequence *right)
+{
+
+  GspSequence *leftCopy = new GspSequence(*this);
+  GspSequence *rightCopy = new GspSequence(*right);
+  GspSequence *ret = NULL;
+
+  leftCopy->dropFirstItem();
+  rightCopy->dropLastItem();
+
+  if (*leftCopy == *rightCopy)
+  {
+    GspSequence *ret = new GspSequence(*this);
+    ret->appendSequence(right);
+  }
+
+  delete leftCopy;
+  delete rightCopy;
+
+  return ret;
+}
+
+void GspSequence::dropFirstItem()
+{
+  if (itemsets_.size() > 0)
+  {
+    GspItemset *firstItemSet = *itemsets_.begin();
+    firstItemSet->remove_first_item();
+  }
+}
+
+void GspSequence::dropLastItem()
+{
+  if (itemsets_.size() > 0)
+  {
+    GspItemset *lastItemSet = *(--itemsets_.end());
+    lastItemSet->remove_last_item();
+  }
+}
+
 /* Documented in header */
 string GspSequence::ToString() const
 {
@@ -142,5 +181,37 @@ string GspSequence::ToString() const
 /* Documented in header */
 bool GspSequence::operator==(const GspSequence &other) const
 {
-  return (this->ToString() == other.ToString());
+  if (this->itemsets_.size() != other.itemsets_.size())
+    return false;
+
+  std::list<GspItemset *>::const_iterator
+    leftIt = this->itemsets_.begin(),
+    rightIt = other.itemsets_.begin();
+
+  while (leftIt != this->itemsets_.end())
+  {
+    if (!(**leftIt == **rightIt))
+      return false;
+    ++leftIt;
+    ++rightIt;
+  }
+
+  return true;
+}
+
+void GspSequence::appendSequence(GspSequence *right)
+{
+  GspItemset *lastRight = *(--right->itemsets_.end());
+
+  if(lastRight->item_count() == 1)
+  {
+    this->add_itemset(new GspItemset(*lastRight));
+  }
+  else
+  {
+    GspItemset *lastLeft = *(--this->itemsets_.end());
+    lastRight->rewind();
+    std::string insertItem = lastRight->next();
+    lastLeft->add_item(insertItem);
+  }
 }

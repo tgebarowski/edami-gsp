@@ -33,7 +33,7 @@ GspItemset::~GspItemset()
 {
 }
 
-//TODO stringstream
+
 /* Documented in header */
 std::string GspItemset::ToString() const
 {
@@ -47,4 +47,24 @@ std::string GspItemset::ToString() const
   }
 
   return strStream.str();
+}
+
+bool GspItemset::operator==(const GspItemset &right) const
+{
+  if (this->itemset_.size() != right.itemset_.size())
+    return false;
+
+  std::set<std::string>::const_iterator
+    leftIt = this->itemset_.begin(),
+    rightIt = right.itemset_.begin();
+
+  while (leftIt != this->itemset_.end())
+  {
+    if (*leftIt != *rightIt)
+      return false;
+    ++leftIt;
+    ++rightIt;
+  }
+
+  return true;
 }

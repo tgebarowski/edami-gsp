@@ -68,24 +68,20 @@ class GspItemset
     /**
      * @brief Remove first item in this itemset 
      */
-    /*
-     * TODO needed?
-     *
+
     inline void remove_first_item()
     {
-      itemset_.erase(itemset_.begin(), itemset_.begin()+1);
+      itemset_.erase(itemset_.begin());
     }
-    */
     
     /**
      * @brief Remove last item in this itemset 
      */
-    /* TODO needed?
     inline void remove_last_item()
     {
-      itemset_.pop_back();
+      itemset_.erase(--itemset_.end());
     }
-    */
+
 
     /**
      * @brief Get item count
@@ -150,6 +146,8 @@ class GspItemset
     {
       return itemset_.end();
     }
+
+    bool operator==(const GspItemset &right) const;
 
   private:
 //    string id_; /**< Identifier of User generating this sequence  */

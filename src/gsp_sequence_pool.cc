@@ -131,7 +131,16 @@ GspSequencePool *GspSequencePool::join()
   }
   else
   {
-
+    GspSequence *candidate;
+    for(std::list<GspSequence *>::const_iterator it = sequences.begin(); it != sequences.end(); ++it)
+    {
+      for(std::list<GspSequence *>::const_iterator jt = sequences.begin(); jt != sequences.end(); ++jt)
+      {
+        candidate = (*it)->joinSequences(*jt);
+        if (candidate)
+          ret->sequences.push_back(candidate);
+      }
+    }
   }
 
   return ret;
