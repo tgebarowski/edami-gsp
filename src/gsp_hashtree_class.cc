@@ -58,13 +58,15 @@ GspHashTree::FindSequence(GspSequence &sequence)
 /* Documented in header */
 int GspHashTree::Hash(GspSequence *sequence, int n, int upper_bound)
 {
-  string item = sequence->GetItemByIndex(n);
+  //  string item = sequence->GetItemByIndex(n);
   int hash = 0;
 
+  /*
   if (item != EMPTY_SET)
   {
     hash = item[0] % upper_bound;
   }
+  */
   return hash;
 }
 

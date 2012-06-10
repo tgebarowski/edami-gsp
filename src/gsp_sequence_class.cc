@@ -125,7 +125,8 @@ string GspSequence::ToString() const
   std::stringstream strStream;
   unsigned size = itemsets_.size();
 
-  for(list<GspItemset *>::const_iterator it = itemsets_.begin(); it != itemsets_.end(); ++it)
+  for(list<GspItemset *>::const_iterator it = itemsets_.begin();
+      it != itemsets_.end(); ++it)
   {
     strStream<<"(";
     strStream<<(*it)->ToString();
