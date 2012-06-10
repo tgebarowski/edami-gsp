@@ -24,7 +24,7 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader_, unsigned minSupport
   std::map<std::string, unsigned> cand1;
   std::set<std::string> cand1Sequence;
 
-  while((seq = reader_->getNextSequence()))
+  while((seq = reader_->GetNextSequence()))
   {
     cand1Sequence.clear();
     seq->rewind();

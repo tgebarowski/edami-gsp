@@ -231,15 +231,14 @@ BOOST_AUTO_TEST_CASE(tc_datastore)
 {
   GspDataStore ds("test.dat");
   
-  GspItemset *itemset = NULL;
+  GspSequence *sequence = NULL;
 
   cout << "Testing Data Store..." << endl;
   
-  while ((itemset = ds.GetNextItemset()) != NULL)
+  while ((sequence = ds.GetNextSequence()) != NULL)
   {
-    cout << "timestamp: "\
-         << itemset->get_timestamp() << " ";
-    cout << itemset->ToString() << endl;
+    cout << "ID:" << sequence->getId() << " "\
+         << sequence->ToString() << endl;
   }
   cout << "End of Data Store testing..." << endl;
 }

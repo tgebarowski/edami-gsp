@@ -33,14 +33,14 @@ class GspArrayReader : public GspSequenceReader
         delete *jt;
     }
 
-    bool rewindStream()
+    bool RewindStream()
     {
       iter = sequences.begin();
 
       return true;
     }
 
-    GspSequence *getNextSequence()
+    GspSequence *GetNextSequence()
     {
       if (iter == sequences.end())
         return NULL;

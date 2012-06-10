@@ -146,6 +146,11 @@ class GspSequence
       return support;
     }
 
+    string getId()
+    {
+      return id;
+    }
+
     void setSupport(unsigned support_)
     {
       support = support_;

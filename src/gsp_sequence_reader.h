@@ -14,8 +14,8 @@ class GspSequenceReader
 {
   public:
     virtual ~GspSequenceReader() = 0;
-    virtual bool rewindStream() = 0;
-    virtual GspSequence *getNextSequence() = 0;
+    virtual bool RewindStream() = 0;
+    virtual GspSequence *GetNextSequence() = 0;
 };
 
 inline GspSequenceReader::~GspSequenceReader()

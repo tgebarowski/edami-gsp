@@ -18,11 +18,13 @@
 #include <iterator>
 #include <fstream>
 #include "gsp_common.h"
+#include "gsp_sequence_reader.h"
 
 using namespace std;
 
 /* Predefined classes */
 class GspItemset;
+class GspSequence;
 
 /**
  * @class GspDataStore
@@ -42,7 +44,7 @@ class GspItemset;
  *
  * Fields are separated by '#' symbol, while corresponding items with coma ','
  */
-class GspDataStore
+class GspDataStore : GspSequenceReader
 {
   public:
 
@@ -56,20 +58,34 @@ class GspDataStore
     /**
      * @brief Destroys Itemset object
      */
-    ~GspDataStore();
+    virtual ~GspDataStore();
 
     /**
-     * @brief Get next Itemset from DataStore
-     *
-     * @return Newly allocated @ref GspItemset to be freed by method caller
-     *         NULL is returned when no more itemsets
+     * @brief Rewinds stream
      */
-    GspItemset * GetNextItemset();
-    
+    virtual bool RewindStream();
+
+    /**
+     * @brief Returns next Sequence representing given user
+     *
+     * @return Newly allocated @ref GspSequence to be freed by caller
+     */
+    virtual GspSequence *GetNextSequence();
 
   private:
     ifstream input_file_; /**< Object representing opened file */
     istream_iterator<string> line_iterator_; /**< Current line iterator */
+
+    /**
+     * @brief Get next Itemset from DataStore
+     *
+     * @param[out] ID of user to which this itemset belongs
+     *
+     * @return Newly allocated @ref GspItemset to be freed by method caller
+     *         NULL is returned when no more itemsets
+     */
+    GspItemset * GetNextItemset(string &p_id);
+
 };
 
 
