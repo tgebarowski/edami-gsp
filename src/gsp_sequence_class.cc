@@ -15,14 +15,14 @@
 #include <sstream>
 
 /* Documented in header */
-GspSequence::GspSequence(const string &id_) : id(id_), support(0)
+GspSequence::GspSequence(const std::string &id_) : id(id_), support(0)
 {
 }
 
 /* Documented in header */
 GspSequence::GspSequence(const GspSequence &src)
 {
-  for (list<GspItemset *>::const_iterator it = src.itemsets_.begin();
+  for (std::list<GspItemset *>::const_iterator it = src.itemsets_.begin();
        it != src.itemsets_.end();
        ++it)
   {
@@ -35,7 +35,7 @@ GspSequence::GspSequence(const GspSequence &src)
 GspSequence::~GspSequence()
 {
   /* Remove all itemsets added to this sequence */
-  for (list<GspItemset *>::iterator it = itemsets_.begin();
+  for (std::list<GspItemset *>::iterator it = itemsets_.begin();
        it != itemsets_.end();
        ++it)
   {
@@ -159,12 +159,12 @@ void GspSequence::dropLastItem()
 }
 
 /* Documented in header */
-string GspSequence::ToString() const
+std::string GspSequence::ToString() const
 {
   std::stringstream strStream;
   unsigned size = itemsets_.size();
 
-  for(list<GspItemset *>::const_iterator it = itemsets_.begin(); it != itemsets_.end(); ++it)
+  for(std::list<GspItemset *>::const_iterator it = itemsets_.begin(); it != itemsets_.end(); ++it)
   {
     strStream<<"(";
     strStream<<(*it)->ToString();
@@ -211,7 +211,7 @@ void GspSequence::appendSequence(GspSequence *right)
   {
     GspItemset *lastLeft = *(--this->itemsets_.end());
     lastRight->rewind();
-    std::string insertItem = lastRight->next();
+    std::string insertItem = lastRight->currentItem();
     lastLeft->add_item(insertItem);
   }
 }

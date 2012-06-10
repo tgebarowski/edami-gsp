@@ -27,6 +27,7 @@
 class GspItemset
 {
   public:
+    typedef std::set<std::string>::const_iterator IterType;
 
     /**
      * @brief Constructs Itemset object
@@ -129,12 +130,21 @@ class GspItemset
       iter = itemset_.begin();
     }
 
-    std::string next()
+    bool nextItem()
+    {
+      ++iter;
+      if (iter == itemset_.end())
+        return false;
+
+      return true;
+    }
+
+    std::string currentItem()
     {
       if (iter == itemset_.end())
         return "";
 
-      return *iter++;
+      return *iter;
     }
 
     std::set<std::string>::const_iterator begin()

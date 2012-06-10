@@ -9,6 +9,8 @@ src/gsp_hashtree_class.cc
 src/gsp_sequence_class.cc
 src/gsp_itemset_class.cc
 src/gsp_common.cc
+src/gsp_sequence_pool.cc
+src/gsp_algorithm.cc
 """)
 
 main_sources = Split(

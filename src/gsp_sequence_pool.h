@@ -24,9 +24,12 @@ class GspSequencePool
     std::list<GspSequence *> sequences;
     unsigned k;
     unsigned minSupport;
+    int windowSize;
+    int minGap;
+    int maxGap;
   public:
-    GspSequencePool(unsigned minSupport_);
-    GspSequencePool(GspSequenceReader *reader_, unsigned minSupport_);
+    GspSequencePool(unsigned minSupport_, int windowSize, int minGap, int maxGap);
+    GspSequencePool(GspSequenceReader *reader_, unsigned minSupport_, int windowSize, int minGap, int maxGap);
     ~GspSequencePool();
     unsigned getK()
     {
@@ -37,6 +40,7 @@ class GspSequencePool
       return sequences.size();
     }
     GspSequencePool *join();
+    void countSupport(GspSequenceReader *reader);
     void printSequences();
 };
 
