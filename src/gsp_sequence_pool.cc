@@ -11,14 +11,16 @@
 
 #include "gsp_sequence_pool.h"
 #include "gsp_sequence_reader.h"
+#include "gsp_hashtree_class.h"
 
-GspSequencePool::GspSequencePool(unsigned minSupport_) : k(0), minSupport(minSupport_)
+GspSequencePool::GspSequencePool(unsigned minSupport_, int windowSize_, int minGap_, int maxGap_)
+  : k(0), minSupport(minSupport_), windowSize(windowSize_), minGap(minGap_), maxGap(maxGap_)
 {
 
 }
 
-GspSequencePool::GspSequencePool(GspSequenceReader *reader_, unsigned minSupport_)
-  : k(1), minSupport(minSupport_)
+GspSequencePool::GspSequencePool(GspSequenceReader *reader_, unsigned minSupport_, int windowSize_, int minGap_, int maxGap_)
+  : k(1), minSupport(minSupport_), windowSize(windowSize_), minGap(minGap_), maxGap(maxGap_)
 {
   GspSequence *seq;
   std::map<std::string, unsigned> cand1;
@@ -28,10 +30,12 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader_, unsigned minSupport
   {
     cand1Sequence.clear();
     seq->rewind();
-    GspItemset *itemset;
-    while((itemset = seq->nextItemset()))
+    GspItemset *itemset = seq->currentItemset();
+    while(itemset)
     {
       cand1Sequence.insert(itemset->begin(), itemset->end());
+      seq->nextItemset();
+      itemset = seq->currentItemset();
     }
 
     for (std::set<std::string>::const_iterator seqIt = cand1Sequence.begin(); seqIt!= cand1Sequence.end(); ++seqIt)
@@ -62,7 +66,7 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader_, unsigned minSupport
 
 GspSequencePool *GspSequencePool::join()
 {
-  GspSequencePool *ret = new GspSequencePool(minSupport);
+  GspSequencePool *ret = new GspSequencePool(minSupport, windowSize, minGap, maxGap);
   GspSequence *newSeq;
   GspItemset *newItemset;
   GspSequence *tempSeqL, *tempSeqR;
@@ -78,9 +82,9 @@ GspSequencePool *GspSequencePool::join()
       //(L)(L)
       tempSeqL = *jt;
       tempSeqL->rewind();
-      tempItemsetL = tempSeqL->nextItemset();
+      tempItemsetL = tempSeqL->currentItemset();
       tempItemsetL->rewind();
-      std::string itemLeft = tempItemsetL->next();
+      std::string itemLeft = tempItemsetL->currentItem();
       newSeq = new GspSequence("");
       newItemset = new GspItemset(0);
       newItemset->add_item(itemLeft);
@@ -94,9 +98,9 @@ GspSequencePool *GspSequencePool::join()
       {
         tempSeqR = *it;
         tempSeqR->rewind();
-        tempItemsetR = tempSeqR->nextItemset();
+        tempItemsetR = tempSeqR->currentItemset();
         tempItemsetR->rewind();
-        std::string itemRight = tempItemsetR->next();
+        std::string itemRight = tempItemsetR->currentItem();
         //(L)(R)
         newSeq = new GspSequence("");
         newItemset = new GspItemset(0);
@@ -131,7 +135,16 @@ GspSequencePool *GspSequencePool::join()
   }
   else
   {
-
+    GspSequence *candidate;
+    for(std::list<GspSequence *>::const_iterator it = sequences.begin(); it != sequences.end(); ++it)
+    {
+      for(std::list<GspSequence *>::const_iterator jt = sequences.begin(); jt != sequences.end(); ++jt)
+      {
+        candidate = (*it)->joinSequences(*jt);
+        if (candidate)
+          ret->sequences.push_back(candidate);
+      }
+    }
   }
 
   return ret;
@@ -142,6 +155,33 @@ void GspSequencePool::printSequences()
   for(std::list<GspSequence *>::const_iterator it = sequences.begin(); it != sequences.end(); ++it)
   {
     std::cout<<(*it)->ToString()<<" "<<(*it)->getSupport()<<"\n";
+  }
+}
+
+void GspSequencePool::countSupport(GspSequenceReader *reader)
+{
+  //TODO cos madrzejszego niz 4:)
+  GspHashTree tree(k, 2);
+
+  for (std::list<GspSequence *>::const_iterator it = sequences.begin(); it != sequences.end(); ++it)
+  {
+    tree.AddSequence(*it);
+  }
+  std::cout<<std::endl;
+
+  GspSequence *seqTemp;
+
+  tree.printTree();
+
+  //TODO sprawdzac returna
+  reader->RewindStream();
+  while((seqTemp = reader->GetNextSequence()))
+  {
+    tree.checkClientSequence(seqTemp, windowSize, minGap, maxGap);
+    std::cout<<"Client sequence: "<<seqTemp->ToString()<<" :"<<std::endl;
+    seqTemp->printCandidates();
+    //TODO add calculating support for candidates
+    delete seqTemp;
   }
 }
 

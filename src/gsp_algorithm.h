@@ -6,7 +6,7 @@
  */
 
 #ifndef GSP_ALGORITHM_H_
-#define GSP_ALGORITHM_H_SEQUENCE_POOL
+#define GSP_ALGORITHM_H_
 
 #include <memory>
 
@@ -19,9 +19,9 @@ class GspAlgorithm
     std::auto_ptr<GspSequenceReader> reader;
     unsigned  k;
     unsigned minSupport;
-    unsigned windowSize;
-    unsigned minGap;
-    unsigned maxGap;
+    int windowSize;
+    int minGap;
+    int maxGap;
 
     GspSequencePool *frequent;
     GspSequencePool *candidates;
@@ -29,7 +29,7 @@ class GspAlgorithm
     bool finished;
 
   public:
-    GspAlgorithm(GspSequenceReader *inReader_, unsigned minSupport_, unsigned windowSize_, unsigned minGap_, unsigned maxGap_);
+    GspAlgorithm(GspSequenceReader *inReader_, unsigned minSupport_, int windowSize_, int minGap_, int maxGap_);
     ~GspAlgorithm();
     unsigned getK()
     {

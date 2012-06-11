@@ -27,6 +27,7 @@
 class GspItemset
 {
   public:
+    typedef std::set<std::string>::const_iterator IterType;
 
     /**
      * @brief Constructs Itemset object
@@ -68,22 +69,19 @@ class GspItemset
     /**
      * @brief Remove first item in this itemset 
      */
-    /*
     inline void remove_first_item()
     {
-      itemset_.erase(itemset_.begin(), itemset_.begin()+1);
+      itemset_.erase(itemset_.begin());
     }
-    */
     
     /**
      * @brief Remove last item in this itemset 
      */
-    /*
     inline void remove_last_item()
     {
-      itemset_.pop_back();
+      itemset_.erase(--itemset_.end());
     }
-    */
+
 
     /**
      * @brief Get item count
@@ -131,12 +129,21 @@ class GspItemset
       iter = itemset_.begin();
     }
 
-    std::string next()
+    bool nextItem()
+    {
+      ++iter;
+      if (iter == itemset_.end())
+        return false;
+
+      return true;
+    }
+
+    std::string currentItem()
     {
       if (iter == itemset_.end())
         return "";
 
-      return *iter++;
+      return *iter;
     }
 
     std::set<std::string>::const_iterator begin()
@@ -148,6 +155,8 @@ class GspItemset
     {
       return itemset_.end();
     }
+
+    bool operator==(const GspItemset &right) const;
 
   private:
 //    string id_; /**< Identifier of User generating this sequence  */

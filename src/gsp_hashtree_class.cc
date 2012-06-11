@@ -11,8 +11,17 @@
 #include <stdio.h>
 
 #include "gsp_hashtree_class.h"
-#include "gsp_sequence_class.h"
-#include "gsp_common.h"
+
+
+enum GSP_STATUS GspHashTree::AddSequence(GspSequence *sequence)
+{
+  std::cout << "Add To Tree: " + sequence->ToString() << std::endl;
+
+  sequence->rewindAll();
+  root_->SetSequence(sequence);
+
+  return GSP_OK;
+}
 
 /* Documented in header */
 GspHashTree::GspHashTree(int max_level,
@@ -21,30 +30,22 @@ GspHashTree::GspHashTree(int max_level,
     max_level_(max_level),
     max_leaf_(max_leaf)
 {
+  root_ = new Node(max_leaf_, max_level_);
 }
 
 /* Documented in header */
 GspHashTree::~GspHashTree()
 {
+  delete root_;
 }
 
 /* Documented in header */
-gsp_status_t 
-GspHashTree::AddSequence(GspSequence *sequence)
-{
-    cout << "Add: " + sequence->ToString() << endl;
 
-  /** If HashTree is empty */
-  if (root_ == NULL)
-  {
-    root_ = new Node(max_leaf_, max_level_);
-  }
-  root_->SetSequence(sequence);
-  
-  return GSP_OK;
-}
+
+
 
 /* Documented in header */
+/*
 const GspSequence * 
 GspHashTree::FindSequence(GspSequence &sequence)
 {
@@ -54,21 +55,101 @@ GspHashTree::FindSequence(GspSequence &sequence)
   }
   return NULL;
 }
+*/
 
 /* Documented in header */
-int GspHashTree::Hash(GspSequence *sequence, int n, int upper_bound)
+int GspHashTree::Hash(std::string item, int upper_bound)
 {
-  //  string item = sequence->GetItemByIndex(n);
-  int hash = 0;
+  int stringSum = 0;
+  int stringSize = item.size();
 
-  /*
-  if (item != EMPTY_SET)
-  {
-    hash = item[0] % upper_bound;
-  }
-  */
-  return hash;
+  for(int it = 0; it < stringSize; ++it)
+    stringSum += item[it];
+
+  return stringSum % upper_bound;
 }
 
+void GspHashTree::checkClientSequence(GspSequence *seq, int windowSize, int minGap, int maxGap)
+{
+  GspSequence::IterType itemSetIt = seq->begin();
+  GspItemset::IterType itemIt = (*itemSetIt)->begin();
+  root_->checkClientSequence(seq, *itemSetIt, itemSetIt, itemIt, windowSize, minGap, maxGap);
+}
 
+void GspHashTree::Node::checkClientSequence(GspSequence *seq, GspItemset *itemSet, GspSequence::IterType itemSetIter, GspItemset::IterType itemIter, int windowSize, int minGap, int maxGap)
+{
+  if (type_ == NODE_LEAF)
+  {
+    for(std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end(); ++it)
+    {
+      seq->addCandidateSequence(*it);
+    }
+  }
+  else
+  {
+    if(level_ == 0)
+    {
+      for(itemSetIter = seq->begin(); itemSetIter != seq->end(); ++itemSetIter)
+      {
+        itemSet = *itemSetIter;
+        for(itemIter = itemSet->begin(); itemIter != itemSet->end(); ++itemIter)
+        {
+          nodes_[Hash(*itemIter, MAX_NODES)]->checkClientSequence(seq, itemSet, itemSetIter, itemIter, windowSize, minGap, maxGap);
+        }
+      }
+    }
+    else
+    {
+      bool maxGapPresent = (maxGap != 0);
+      int minTime = itemSet->get_timestamp() - windowSize;
+      int maxTime;
+      if (maxGapPresent)
+      {
+        maxTime = itemSet->get_timestamp() + (maxGap > windowSize ? maxGap : windowSize);
+      }
+
+      //TODO check?!
+      GspItemset::IterType backItemIterCopy(itemIter);
+      GspSequence::IterType backItemsetIterCopy(itemSetIter);
+      GspItemset *backItemsetCopy = itemSet;
+      do
+      {
+        for(GspItemset::IterType it = backItemsetCopy->begin(); it != backItemIterCopy; ++it)
+        {
+          nodes_[Hash(*it, MAX_NODES)]->checkClientSequence(seq, backItemsetCopy, backItemsetIterCopy, it, windowSize, minGap, maxGap);
+        }
+        if(backItemsetIterCopy-- == seq->begin())
+          break;
+        backItemsetCopy = *backItemsetIterCopy;
+        if (backItemsetCopy->get_timestamp() < minTime)
+          break;
+        backItemIterCopy = backItemsetCopy->end();
+      } while(1);
+
+      //TODO check?!
+      GspItemset::IterType forwardItemIterCopy(itemIter);
+      GspSequence::IterType forwardItemsetIterCopy(itemSetIter);
+      ++forwardItemIterCopy;
+      GspItemset *forwardItemsetCopy = itemSet;
+      GspSequence::IterType it = forwardItemsetIterCopy;
+      while(1)
+      {
+        for(; forwardItemIterCopy != forwardItemsetCopy->end(); ++forwardItemIterCopy)
+        {
+          nodes_[Hash(*forwardItemIterCopy, MAX_NODES)]->checkClientSequence(seq, forwardItemsetCopy, it, forwardItemIterCopy,  windowSize,  minGap,  maxGap);
+        }
+
+        if (++it == seq->end())
+          break;
+
+        forwardItemsetCopy = *it;
+        if (maxGapPresent && forwardItemsetCopy->get_timestamp() > maxTime)
+        {
+          break;
+        }
+        forwardItemIterCopy = forwardItemsetCopy->begin();
+      }
+    }
+  }
+}
 

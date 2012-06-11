@@ -14,11 +14,10 @@
 
 #include <list>
 #include <string>
+#include <set>
 
-using namespace std;
+#include "gsp_itemset_class.h"
 
-/* Class predefinitions */
-class GspItemset;
 
 /**
  * @class GspSequence
@@ -28,11 +27,11 @@ class GspItemset;
 class GspSequence
 {
   public:
-
+    typedef std::list<GspItemset *>::const_iterator IterType;
     /**
      * @brief Constructs Sequence object
      */
-    GspSequence(const string &id_);
+    GspSequence(const std::string &id_);
 
     /**
      * @brief Copy constructor
@@ -53,7 +52,7 @@ class GspSequence
      *
      * @return string representing N-th item content
      */
-    string GetItemByIndex(int n);
+    std::string GetItemByIndex(int n);
 
     /**
      * @brief Compare this GspSequence (s1) with another provided as argument (s2)
@@ -82,7 +81,7 @@ class GspSequence
     /**
      * @brief Get string representation of sequence
      */
-    string ToString() const;
+    std::string ToString() const;
 
 
     /* Operators */
@@ -105,8 +104,6 @@ class GspSequence
       itemsets_.push_back(itemset);
     }
 
-
-
     /**
      * @brief Get last Itemset from GspSequence
      */
@@ -128,12 +125,42 @@ class GspSequence
       iter = itemsets_.begin();
     }
 
-    GspItemset *nextItemset()
+    void rewindAll()
+    {
+      rewind();
+      for(std::list<GspItemset *>::const_iterator it = itemsets_.begin(); it != itemsets_.end(); ++it)
+        (*it)->rewind();
+    }
+
+    bool nextItemset()
+    {
+      ++iter;
+
+      if (iter != itemsets_.end())
+      {
+        (*iter)->rewind();
+        return true;
+      }
+
+      return false;
+    }
+
+    GspItemset *currentItemset()
     {
       if (iter == itemsets_.end())
-         return NULL;
+        return NULL;
 
-      return *iter++;
+      return *iter;
+    }
+
+    IterType begin()
+    {
+      return itemsets_.begin();
+    }
+
+    IterType end()
+    {
+      return itemsets_.end();
     }
 
     void increaseSupport()
@@ -146,7 +173,7 @@ class GspSequence
       return support;
     }
 
-    string getId()
+    std::string getId()
     {
       return id;
     }
@@ -156,12 +183,34 @@ class GspSequence
       support = support_;
     }
 
+    GspSequence *joinSequences(GspSequence *right);
+
+    void dropFirstItem();
+
+    void dropLastItem();
+
+    void appendSequence(GspSequence *right);
+
+    void addCandidateSequence(GspSequence *toAdd)
+    {
+      candidates.insert(toAdd);
+    }
+
+    void printCandidates()
+    {
+      for (std::set<GspSequence *>::iterator it = candidates.begin(); it != candidates.end(); ++it)
+      {
+        std::cout<<(*it)->ToString()<<std::endl;
+      }
+    }
+
   private:
 
-    list<GspItemset *> itemsets_; /**< List of itemsets */
-    list<GspItemset *>::iterator iter;
-    string id;
+    std::list<GspItemset *> itemsets_; /**< List of itemsets */
+    std::list<GspItemset *>::const_iterator iter;
+    std::string id;
     unsigned support;
+    std::set<GspSequence *> candidates;
 
 };
 

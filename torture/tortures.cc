@@ -19,7 +19,7 @@ using boost::unit_test::test_suite;
 #include "gsp_hashtree_class.h"
 #include "gsp_sequence_class.h"
 #include "gsp_itemset_class.h"
-#include "gsp_datastore_class.h"
+#include "gsp_file_reader_class.h"
 
 /**
  * @brief Test Case for GspSequence primitives
@@ -86,8 +86,9 @@ BOOST_AUTO_TEST_CASE(tc_sequence_append_itemset)
 
   cout << "After appending " << appended_1->ToString()\
        << ": " << seq->ToString() << endl;
-
+  */
   /* Remove previously appended item */
+  /*
   is2->remove_last_item();
 
   cout << "Input sequence: " << seq->ToString() << endl;
@@ -95,6 +96,7 @@ BOOST_AUTO_TEST_CASE(tc_sequence_append_itemset)
 
   cout << "After appending " << appended_2->ToString()\
        << ": " << seq->ToString() << endl;
+  */
 }
 #endif
 
@@ -104,6 +106,7 @@ BOOST_AUTO_TEST_CASE(tc_sequence_append_itemset)
 #if 0
 BOOST_AUTO_TEST_CASE(tc_sequence_compare)
 {
+  /*
   GspHashTree ht(2,2);
   GspSequence *seq = new GspSequence("s1");
   GspSequence *seq2= new GspSequence("s2");
@@ -131,6 +134,7 @@ BOOST_AUTO_TEST_CASE(tc_sequence_compare)
   cout << "Input sequence (s2): " + seq2->ToString() << endl;
 
   BOOST_CHECK_EQUAL(true, seq->CompareWithSubsequence(*seq2));
+  */
 }
 #endif
 
@@ -173,6 +177,7 @@ BOOST_AUTO_TEST_CASE(tc_hashtree_add_sequence)
   BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq2));
   BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq3));
   BOOST_CHECK_EQUAL(GSP_OK, ht.AddSequence(seq4));
+  */
 }
 #endif
 
@@ -227,7 +232,7 @@ BOOST_AUTO_TEST_CASE(tc_hashtree_find_sequence)
 /**
  * @brief Test Case for DataStore
  */
-BOOST_AUTO_TEST_CASE(tc_datastore)
+BOOST_AUTO_TEST_CASE(tc_filereader)
 {
   GspFileReader fr("test.dat");
   
