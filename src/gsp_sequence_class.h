@@ -14,7 +14,7 @@
 
 #include <list>
 #include <string>
-
+#include <set>
 
 #include "gsp_itemset_class.h"
 
@@ -186,12 +186,26 @@ class GspSequence
 
     void appendSequence(GspSequence *right);
 
+    void addCandidateSequence(GspSequence *toAdd)
+    {
+      candidates.insert(toAdd);
+    }
+
+    void printCandidates()
+    {
+      for (std::set<GspSequence *>::iterator it = candidates.begin(); it != candidates.end(); ++it)
+      {
+        std::cout<<(*it)->ToString()<<std::endl;
+      }
+    }
+
   private:
 
     std::list<GspItemset *> itemsets_; /**< List of itemsets */
     std::list<GspItemset *>::const_iterator iter;
     std::string id;
     unsigned support;
+    std::set<GspSequence *> candidates;
 
 };
 

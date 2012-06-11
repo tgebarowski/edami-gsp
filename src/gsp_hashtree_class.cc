@@ -80,7 +80,10 @@ void GspHashTree::Node::checkClientSequence(GspSequence *seq, GspItemset *itemSe
 {
   if (type_ == NODE_LEAF)
   {
-    //TODO found
+    for(std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end(); ++it)
+    {
+      seq->addCandidateSequence(*it);
+    }
   }
   else
   {

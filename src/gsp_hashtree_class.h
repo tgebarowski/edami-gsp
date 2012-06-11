@@ -15,7 +15,7 @@
 #include <list>
 #include <vector>
 
-#define MAX_NODES 3 /* Maximum number of Nodes pointed by Internal node */
+#define MAX_NODES 11 /* Maximum number of Nodes pointed by Internal node */
 
 #include "gsp_common.h"
 #include "gsp_sequence_class.h"

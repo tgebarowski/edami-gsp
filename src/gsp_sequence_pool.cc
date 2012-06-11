@@ -161,7 +161,7 @@ void GspSequencePool::printSequences()
 void GspSequencePool::countSupport(GspSequenceReader *reader)
 {
   //TODO cos madrzejszego niz 4:)
-  GspHashTree tree(k, 4);
+  GspHashTree tree(k, 2);
 
   for (std::list<GspSequence *>::const_iterator it = sequences.begin(); it != sequences.end(); ++it)
   {
@@ -171,15 +171,18 @@ void GspSequencePool::countSupport(GspSequenceReader *reader)
 
   GspSequence *seqTemp;
 
+  tree.printTree();
+
   //TODO sprawdzac returna
   reader->rewindStream();
   while((seqTemp = reader->getNextSequence()))
   {
     tree.checkClientSequence(seqTemp, windowSize, minGap, maxGap);
+    std::cout<<"Client sequence: "<<seqTemp->ToString()<<" :"<<std::endl;
+    seqTemp->printCandidates();
+    //TODO add calculating support for candidates
     delete seqTemp;
   }
-
-  tree.printTree();
 }
 
 GspSequencePool::~GspSequencePool()

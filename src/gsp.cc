@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   (void) argc;
   (void) argv;
   GspArrayReader *arrReader = createSampleArrayReader();
-  GspAlgorithm gsp(arrReader, 1, 0, 0, std::numeric_limits<unsigned>::max());
+  GspAlgorithm gsp(arrReader, 1, 0, 0, 30);
 
   gsp.printFrequentSeqs();
   std::cout<<"\n\n";
