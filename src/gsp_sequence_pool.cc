@@ -160,7 +160,7 @@ void GspSequencePool::printSequences()
 
 void GspSequencePool::countSupport(GspSequenceReader *reader)
 {
-  //TODO cos madrzejszego niz 4:)
+  //TODO cos madrzejszego niz 2:)
   GspHashTree tree(k, 2);
 
   for (std::list<GspSequence *>::const_iterator it = sequences.begin(); it != sequences.end(); ++it)
