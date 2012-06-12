@@ -180,7 +180,7 @@ void GspSequencePool::PrintSequences()
 /* Documented in header */
 void GspSequencePool::CountSupport(GspSequenceReader *reader)
 {
-  //TODO cos madrzejszego niz 4:)
+  //TODO cos madrzejszego niz 2:)
   GspHashTree tree(k_, 2);
 
   for (std::list<GspSequence *>::const_iterator it = sequences_.begin();

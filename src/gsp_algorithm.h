@@ -25,9 +25,9 @@ class GspAlgorithm
 
     GspAlgorithm(GspSequenceReader *in_reader,
                  unsigned int min_support,
-                 unsigned int window_size,
-                 unsigned int min_gap,
-                 unsigned int max_gap);
+                 int window_size,
+                 int min_gap,
+                 int max_gap);
 
     ~GspAlgorithm();
 
@@ -85,17 +85,17 @@ class GspAlgorithm
       return min_support_;
     }
 
-    inline unsigned int window_size()
+    inline int window_size()
     {
       return window_size_;
     }
 
-    inline unsigned int min_gap() 
+    inline int min_gap()
     {
       return min_gap_;
     }
 
-    inline unsigned int max_gap() 
+    inline int max_gap()
     {
       return max_gap_;
     }
@@ -104,9 +104,9 @@ class GspAlgorithm
 
     std::auto_ptr<GspSequenceReader> reader_;
     unsigned int min_support_; /**< Min support of sequence to consider as frequent */
-    unsigned int window_size_; /**< Window size - see GSP algorithm paper */
-    unsigned int min_gap_; /**< Min gap - see GSP algorithm paper */
-    unsigned int max_gap_; /** <Max gap - see GSP algorithm paper */
+    int window_size_; /**< Window size - see GSP algorithm paper */
+    int min_gap_; /**< Min gap - see GSP algorithm paper */
+    int max_gap_; /** <Max gap - see GSP algorithm paper */
 
     GspSequencePool *frequent_; /**< Pool with frequent sequences */
     GspSequencePool *candidates_; /**< Pool with candidate sequences */

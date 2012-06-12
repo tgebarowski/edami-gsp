@@ -18,9 +18,9 @@
 /* Documented in header */
 GspAlgorithm::GspAlgorithm(GspSequenceReader *in_reader,
                            unsigned int min_support,
-                           unsigned int window_size,
-                           unsigned int min_gap,
-                           unsigned int max_gap)
+                           int window_size,
+                           int min_gap,
+                           int max_gap)
   : reader_(in_reader),
     min_support_(min_support),
     window_size_(window_size),
@@ -79,7 +79,7 @@ void GspAlgorithm::RunPass()
     return;
   }
 
-  candidates_->PrintSequences();
+//  candidates_->PrintSequences();
   std::cout<<std::flush;
 
   std::cout<<std::endl;

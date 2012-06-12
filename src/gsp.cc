@@ -30,10 +30,10 @@ GspArrayReader *CreateSampleArrayReader();
  */
 bool ParseCommandLineArguments(int argc, char *argv[],
                                std::string &p_data_file_path,
-                               unsigned int &p_min_support,
-                               unsigned int &p_window_size,
-                               unsigned int &p_min_gap,
-                               unsigned int &p_max_gap)
+                               int &p_min_support,
+                               int &p_window_size,
+                               int &p_min_gap,
+                               int &p_max_gap)
 {
   bool ret = false;
 
@@ -63,10 +63,11 @@ bool ParseCommandLineArguments(int argc, char *argv[],
 int main(int argc, char *argv[])
 {
   std::string data_file_path;
-  unsigned int min_support;
-  unsigned int window_size;
-  unsigned int min_gap;
-  unsigned int max_gap;
+  int min_support;
+  int window_size;
+  int min_gap;
+  int max_gap;
+
 
   if (ParseCommandLineArguments(argc, argv,
                                 data_file_path,
@@ -81,11 +82,12 @@ int main(int argc, char *argv[])
         reader->IsValid())
     {
       GspAlgorithm gsp(reader, min_support, window_size,
-                       min_gap, max_gap);      
+                       min_gap, max_gap);
+//      GspAlgorithm gsp(CreateSampleArrayReader(), 1, 0, 0, 10);
 
-      gsp.PrintFrequentSequences();
+//      gsp.PrintFrequentSequences();
       std::cout << "\n\n";
-      gsp.PrintCandidateSequences();
+//      gsp.PrintCandidateSequences();
       std::cout << "\n\n";
       gsp.RunPass();
     }
@@ -93,8 +95,10 @@ int main(int argc, char *argv[])
     {
       std::cout << "Could not open dataset file: " << data_file_path << std::endl;
     }
-    delete reader;
+//    delete reader; auto_ptr in GspAlgorithm
   }
+
+  std::cout<<"Exiting!!";
   return 0;
 }
 

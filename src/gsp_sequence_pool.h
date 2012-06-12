@@ -21,7 +21,6 @@
 class GspSequenceReader;
 class GspAlgorithm;
 
-
 class GspSequencePool
 {
   public:
