@@ -44,7 +44,7 @@ class GspItemset
      *
      * @param[in] src Source object
      */
-    //TODO just use the vector CC?
+
     GspItemset(const GspItemset &src);
     /**
      * @brief Destroys Itemset object
