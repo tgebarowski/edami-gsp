@@ -4,13 +4,13 @@ import os
 
 obj_sources = Split(
 """
-src/gsp_datastore_class.cc
+src/gsp_algorithm.cc
+src/gsp_sequence_pool.cc
+src/gsp_file_reader_class.cc
 src/gsp_hashtree_class.cc
 src/gsp_sequence_class.cc
 src/gsp_itemset_class.cc
 src/gsp_common.cc
-src/gsp_sequence_pool.cc
-src/gsp_algorithm.cc
 """)
 
 main_sources = Split(
@@ -58,6 +58,7 @@ env = MakeEnvironment()
 
 object_list = env.Object(source = obj_sources)
 main_list = env.Object(source = main_sources)
-gsp = env.Program('gsp', main_list, object_list)
+gsp = env.Program('gsp', source =main_list + object_list)
 
-BoostUnitTest(env, 'test', source=object_list + tortures)
+if env['PLATFORM'] != 'win32':
+   BoostUnitTest(env, 'test', source=object_list + tortures)

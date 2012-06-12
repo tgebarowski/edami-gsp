@@ -173,6 +173,11 @@ class GspSequence
       return support;
     }
 
+    std::string getId()
+    {
+      return id;
+    }
+
     void setSupport(unsigned support_)
     {
       support = support_;

@@ -1,8 +1,12 @@
-/*
- * gsp_sequence_pool.cpp
+/* -*- mode: cc-mode; tab-width: 2; -*- */
+
+/**
+ * @file  gsp_algorithm.cc
  *
- *  Created on: Jun 9, 2012
- *      Author: adas
+ * @brief Generalized Sequential Patterns (GSP) algorithm implementation
+ *
+ * @author: Adam Szczepankiewicz <adam.szczepankiewicz@cern.ch>
+ * @date: Sat Jun 9 15:30:39 2012
  */
 
 #include <cstdlib>
@@ -11,51 +15,74 @@
 #include "gsp_sequence_reader.h"
 #include "gsp_sequence_pool.h"
 
-GspAlgorithm::GspAlgorithm(GspSequenceReader *inReader_, unsigned minSupport_, int windowSize_, int minGap_, int maxGap_)
-  : reader(inReader_), k(1), minSupport(minSupport_), windowSize(windowSize_), minGap(minGap_), maxGap(maxGap_), frequent(NULL), candidates(NULL), finished(false)
+/* Documented in header */
+GspAlgorithm::GspAlgorithm(GspSequenceReader *in_reader,
+                           unsigned int min_support,
+                           unsigned int window_size,
+                           unsigned int min_gap,
+                           unsigned int max_gap)
+  : reader_(in_reader),
+    min_support_(min_support),
+    window_size_(window_size),
+    min_gap_(min_gap),
+    max_gap_(max_gap),
+    frequent_(NULL),
+    candidates_(NULL),
+    finished_(false)
 {
-  frequent = new GspSequencePool(reader.get(), minSupport, windowSize, minGap, maxGap);
-  if (frequent->getSequenceCnt() == 0)
-    finished = true;
+  std::cout << "GSP (min-support: " << ToString(min_support_)\
+            << " window-size: " << ToString(window_size_)\
+            << " min-gap: " << ToString(min_gap_)\
+            << " max-gap: " << ToString(max_gap_) << std::endl;
+
+  frequent_ = new GspSequencePool(reader_.get(), 
+                                  this);
+
+  if (frequent_->GetSequenceCount() == 0)
+  {
+    finished_ = true;
+  }
 }
 
+/* Documented in header */
 GspAlgorithm::~GspAlgorithm()
 {
-  delete frequent;
-  delete candidates;
+  delete frequent_;
+  delete candidates_;
 }
 
-void GspAlgorithm::printFrequentSeqs()
+/* Documented in header */
+void GspAlgorithm::PrintFrequentSequences()
 {
-  if(frequent)
-    frequent->printSequences();
+  if(frequent_)
+    frequent_->PrintSequences();
 }
 
-void GspAlgorithm::printCandidateSeqs()
+/* Documented in header */
+void GspAlgorithm::PrintCandidateSequences()
 {
-  if(candidates)
-    candidates->printSequences();
+  if(candidates_)
+    candidates_->PrintSequences();
 }
 
-void GspAlgorithm::runPass()
+/* Documented in header */
+void GspAlgorithm::RunPass()
 {
-  if (finished)
+  if (finished_)
     return;
 
-  candidates = frequent->join();
-  if (candidates->getSequenceCnt() == 0)
+  candidates_ = frequent_->Join();
+  if (candidates_->GetSequenceCount() == 0)
   {
-    finished = true;
+    finished_ = true;
 
     return;
   }
 
-  candidates->printSequences();
+  candidates_->PrintSequences();
   std::cout<<std::flush;
 
   std::cout<<std::endl;
-  candidates->countSupport(reader.get());
-
-
+  candidates_->CountSupport(reader_.get());
 }
 

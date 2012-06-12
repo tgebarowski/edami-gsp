@@ -28,17 +28,13 @@
  */
 enum GSP_STATUS
 {
-  GSP_OK,
-  GSP_EINVAL,
-  GSP_EEXIST,
-  GSP_ENOTFOUND,
-  GSP_ERROR
+  GSP_OK, /**< OK */
+  GSP_EINVAL, /**< Invalid value/pointer */
+  GSP_EEXIST, /**< Value already exists */
+  GSP_ENOTFOUND, /**< Value not found */
+  GSP_ERROR /**< Generic error */
 };
-/**< OK */
-/**< Invalid value/pointer */
-/**< Value already exists */
-/**< Value not found */
-/**< Generic error */
+
 
 /**
  * @brief Conversion to string

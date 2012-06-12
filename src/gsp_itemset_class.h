@@ -69,7 +69,6 @@ class GspItemset
     /**
      * @brief Remove first item in this itemset 
      */
-
     inline void remove_first_item()
     {
       itemset_.erase(itemset_.begin());

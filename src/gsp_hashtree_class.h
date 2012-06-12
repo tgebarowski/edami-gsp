@@ -22,6 +22,7 @@
 
 
 /* Class predefinitions */
+class GspAlgorithm;
 
 /**
  * @class GspHashTree
@@ -69,23 +70,13 @@ class GspHashTree
      */
     static int Hash(std::string string, int upper_bound);
 
-    void printTree()
+    void PrintTree()
     {
-      root_->printNode();
+      root_->PrintNode();
     }
 
-    void checkClientSequence(GspSequence *seq, int windowSize, int minGap, int maxGap);
-
-    /**
-     *
-     * @brief Find complete GspSequence within Hash Tree
-     *
-     * @param[in] Searched GspSequence object
-     *
-     * @return Element stored in hash tree or NULL if not found
-     */
-//    const GspSequence * FindSequence(GspSequence &sequence);
-
+    void CheckClientSequence(GspSequence *seq,
+                             GspAlgorithm *parent);
 
   private:
     
@@ -105,7 +96,6 @@ class GspHashTree
         /** 
          * @brief Create root node
          */
-
          Node(unsigned int max_leaf,
               unsigned int max_level)
           : level_(0),
@@ -117,14 +107,18 @@ class GspHashTree
              nodes_[it] = NULL;
          }
 
-         void printNode()
+         /**
+          * @brief Print node information
+          */
+         void PrintNode()
          {
            if (type_ == NODE_LEAF)
            {
              std::cout<<"Leaf node, level: "<<level_<<":"<<std::endl;
-             for (std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end(); ++it)
+             for (std::list<GspSequence *>::iterator it = sequences_.begin();
+                  it != sequences_.end(); ++it)
              {
-               std::cout<<(*it)->ToString()<<" "<<(*it)->getSupport()<<std::endl;
+               std::cout << (*it)->ToString() << " " << (*it)->getSupport()<<std::endl;
              }
              std::cout<<std::endl;
            }
@@ -134,9 +128,10 @@ class GspHashTree
              for(int it = 0; it < MAX_NODES; ++it)
              {
                std::cout<<"Child "<<it<<":"<<std::endl;
-               nodes_[it]->printNode();
+               nodes_[it]->PrintNode();
              }
-             std::cout<<std::endl<<"END Interior node, level: "<<level_<<std::endl<<std::endl;
+             std::cout << std::endl<<"END Interior node, level: "\
+                       << level_<<std::endl<<std::endl;
            }
          }
 
@@ -171,8 +166,11 @@ class GspHashTree
              delete nodes_[it];
          }
 
-         void checkClientSequence(GspSequence *seq, GspItemset *itemSet, GspSequence::IterType itemSetIter, GspItemset::IterType itemIter, int windowSize, int minGap, int maxGap);
-
+         void CheckClientSequence(GspSequence *seq,
+                                  GspItemset *itemSet,
+                                  GspSequence::IterType itemSetIter,
+                                  GspItemset::IterType itemIter,
+                                  GspAlgorithm *parent);
 
         /**
          * @brief Set GspSequence stored in Node
@@ -184,7 +182,8 @@ class GspHashTree
         {
           if (type_ == NODE_LEAF)
           {
-            std::cout<<"Leaf - Level: "<<level_<<" Sequence: "<<sequence->ToString()<<std::endl;
+            std::cout << "Leaf - Level: " << level_\
+                      << " Sequence: "<<sequence->ToString()<<std::endl;
             sequences_.push_back(sequence);
             if (sequences_.size() > max_sequences_ &&
                 level_ < max_level_)
@@ -194,46 +193,28 @@ class GspHashTree
           }
           else
           {
-            std::cout<<"22Interior - Level: "<<level_<<" Sequence: "<<sequence->ToString();
+            std::cout << "Interior - Level: " << level_\
+                      << " Sequence: "<<sequence->ToString();
             GspItemset *curItemSet = sequence->currentItemset();
             std::string curItem = curItemSet->currentItem();
             if(!curItemSet->nextItem())
               sequence->nextItemset();
 
             int hash = Hash(curItem, MAX_NODES);
-            std::cout<<" Itemset: "<<curItemSet->ToString()<<" Item: "<<curItem<< " Hash: "<<hash<<std::endl;
+            std::cout << " Itemset: "<<curItemSet->ToString()\
+                      << " Item: " <<curItem<< " Hash: "<<hash<<std::endl;
             nodes_[hash]->SetSequence(sequence);
           }
         }
-
-        /**
-         * @brief Add new interior leaf
-         */
-        /*
-        void AddLeaf(GspSequence *sequence)
-        {
-          int hash = GspHashTree::Hash(sequence, level_, MAX_NODES);
-
-          if (hash > -1 &&
-              nodes_[hash] == NULL)
-          {
-            int new_level = level_ + 1;
-
-            cout << "Add leaf hash  => " << hash << " level: "<< new_level << endl;
-
-            nodes_[hash] = new Node(new_level, NODE_LEAF,
-                                    max_sequences_, max_level_);
-          }
-          nodes_[hash]->SetSequence(sequence);
-        }
-        */
 
         /**
          * @brief Transform node from Leaf to Interior
          */
         void TransformToInterior()
         {
-          std::cout<<std::endl<< "Transforming from leaf to interior at level: " << level_ << std::endl;
+          std::cout << std::endl\
+                    <<  "Transforming from leaf to interior at level: "\
+                    << level_ << std::endl;
           if (type_ == NODE_LEAF)
           {
             type_ =  NODE_INTERIOR;
@@ -247,9 +228,8 @@ class GspHashTree
                  it != sequences_.end();
                  ++it)
             {
-              std::cout<<"PUK!! "<<std::flush;
-              std::cout<<(*it)->ToString();
               GspItemset *curItemSet = (*it)->currentItemset();
+              std::cout<<(*it)->ToString();
               std::cout<<" A"<<std::flush;
               std::string curItem = curItemSet->currentItem();
               std::cout<<" B"<<std::flush;
@@ -261,7 +241,10 @@ class GspHashTree
               std::cout<<" D"<<std::endl;
 
               int hash = Hash(curItem, MAX_NODES);
-              std::cout<<"Interior - Level: "<<level_<<" Sequence: "<<(*it)->ToString()<<" Itemset: "<<curItemSet->ToString()<<" Item: "<<curItem<< " Hash: "<<hash<<std::endl;
+              std::cout << "Interior - Level: " << level_\
+                        <<" Sequence: "<<(*it)->ToString()\
+                        <<" Itemset: "<<curItemSet->ToString()\
+                        <<" Item: "<<curItem<< " Hash: "<<hash<<std::endl;
               nodes_[hash]->SetSequence((*it));
             }
             sequences_.clear();
@@ -269,64 +252,13 @@ class GspHashTree
           std::cout << "Transforming done for level "<< std::endl<<std::endl;
         }
 
-        /**
-         * @brief Find indicated sequence in a specified Node
-         *
-         * @param[in] node Searched Node
-         * @param[in] sequence Searched sequence
-         */
-//        GspSequence * Find(Node *node, GspSequence *sequence)
-//        {
-//          if (node != NULL &&
-//              node->type_ == NODE_LEAF)
-//          {
-//            cout << "Searching leaf at level: " << node->level_ << endl;
-//
-//            for (list<GspSequence *>::iterator it = sequences_.begin();
-//                 it != sequences_.end();
-//                 ++it)
-//            {
-//              if (*it == sequence)
-//              {
-//                cout << "Found element at level: " << node->level_ << endl;
-//                return *it;
-//              }
-//            }
-//          }
-//          else if (node != NULL &&
-//                   node->type_ == NODE_INTERIOR)
-//          {
-//            cout << "Searching interior node at level: " << level_ << endl;
-//
-//            int hash = GspHashTree::Hash(sequence, node->level_, MAX_NODES);
-//            cout << "Hash  => " << hash << endl;
-//
-//            if (hash > -1 &&
-//                nodes_[hash] != NULL)
-//            {
-//              return Find(nodes_[hash], sequence);
-//            }
-//          }
-//          return NULL;
-//        }
-        
-        
-        /**
-         * @brief Convert Node to string representation
-         */
-//        string ToString()
-//        {
-//          string node_type = ((type_ == NODE_INTERIOR) ? "Interior" : "Leaf");
-//          return node_type + " (level: " + ::ToString(level_) + ")";
-//        }
-
       private:
         unsigned int level_; /**< Level of node */
         node_t type_;
 
         /* Leaf node only */
         std::list<GspSequence *> sequences_; /**< Sequences stored in a leaf */
-        unsigned int max_sequences_; /**< Maximum number of sequences stored in a leaf */
+        unsigned int max_sequences_; /**< Maximum number of sequences stored in leaf */
         unsigned int max_level_; /**< Maximum level of node */
 
         /* Interior node only */
