@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "gsp_hashtree_class.h"
+#include "gsp_algorithm.h"
 
 
 enum GSP_STATUS GspHashTree::AddSequence(GspSequence *sequence)
@@ -40,24 +41,6 @@ GspHashTree::~GspHashTree()
 }
 
 /* Documented in header */
-
-
-
-
-/* Documented in header */
-/*
-const GspSequence * 
-GspHashTree::FindSequence(GspSequence &sequence)
-{
-  if (root_ != NULL)
-  {
-    return root_->Find(root_, &sequence);
-  }
-  return NULL;
-}
-*/
-
-/* Documented in header */
 int GspHashTree::Hash(std::string item, int upper_bound)
 {
   int stringSum = 0;
@@ -69,18 +52,31 @@ int GspHashTree::Hash(std::string item, int upper_bound)
   return stringSum % upper_bound;
 }
 
-void GspHashTree::checkClientSequence(GspSequence *seq, int windowSize, int minGap, int maxGap)
+/* Documented in header */
+void GspHashTree::CheckClientSequence(GspSequence *seq,
+                                      GspAlgorithm *parent)
 {
   GspSequence::IterType itemSetIt = seq->begin();
   GspItemset::IterType itemIt = (*itemSetIt)->begin();
-  root_->checkClientSequence(seq, *itemSetIt, itemSetIt, itemIt, windowSize, minGap, maxGap);
+  root_->CheckClientSequence(seq,
+                             *itemSetIt,
+                             itemSetIt,
+                             itemIt,
+                             parent);
 }
 
-void GspHashTree::Node::checkClientSequence(GspSequence *seq, GspItemset *itemSet, GspSequence::IterType itemSetIter, GspItemset::IterType itemIter, int windowSize, int minGap, int maxGap)
+/* Documented in header */
+void GspHashTree::Node::CheckClientSequence(GspSequence *seq,
+                                            GspItemset *itemSet,
+                                            GspSequence::IterType itemSetIter,
+                                            GspItemset::IterType itemIter,
+                                            GspAlgorithm *parent)
 {
   if (type_ == NODE_LEAF)
   {
-    for(std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end(); ++it)
+    for(std::list<GspSequence *>::iterator it = sequences_.begin();
+        it != sequences_.end();
+        ++it)
     {
       seq->addCandidateSequence(*it);
     }
@@ -89,23 +85,32 @@ void GspHashTree::Node::checkClientSequence(GspSequence *seq, GspItemset *itemSe
   {
     if(level_ == 0)
     {
-      for(itemSetIter = seq->begin(); itemSetIter != seq->end(); ++itemSetIter)
+      for (itemSetIter = seq->begin();
+           itemSetIter != seq->end();
+           ++itemSetIter)
       {
         itemSet = *itemSetIter;
-        for(itemIter = itemSet->begin(); itemIter != itemSet->end(); ++itemIter)
+        for (itemIter = itemSet->begin();
+             itemIter != itemSet->end();
+             ++itemIter)
         {
-          nodes_[Hash(*itemIter, MAX_NODES)]->checkClientSequence(seq, itemSet, itemSetIter, itemIter, windowSize, minGap, maxGap);
+          nodes_[Hash(*itemIter, MAX_NODES)]->CheckClientSequence(seq,
+                                                                  itemSet,
+                                                                  itemSetIter,
+                                                                  itemIter,
+                                                                  parent);
         }
       }
     }
     else
     {
-      bool maxGapPresent = (maxGap != 0);
-      int minTime = itemSet->get_timestamp() - windowSize;
+      bool maxGapPresent = (parent->max_gap() != 0);
+      int minTime = itemSet->get_timestamp() - parent->window_size();
       int maxTime;
       if (maxGapPresent)
       {
-        maxTime = itemSet->get_timestamp() + (maxGap > windowSize ? maxGap : windowSize);
+        maxTime = itemSet->get_timestamp() +\
+          (parent->max_gap() > parent->window_size() ? parent->max_gap() : parent->window_size());
       }
 
       //TODO check?!
@@ -114,9 +119,13 @@ void GspHashTree::Node::checkClientSequence(GspSequence *seq, GspItemset *itemSe
       GspItemset *backItemsetCopy = itemSet;
       do
       {
-        for(GspItemset::IterType it = backItemsetCopy->begin(); it != backItemIterCopy; ++it)
+        for(GspItemset::IterType it = backItemsetCopy->begin();
+            it != backItemIterCopy; ++it)
         {
-          nodes_[Hash(*it, MAX_NODES)]->checkClientSequence(seq, backItemsetCopy, backItemsetIterCopy, it, windowSize, minGap, maxGap);
+          nodes_[Hash(*it, MAX_NODES)]->CheckClientSequence(seq,
+                                                            backItemsetCopy,
+                                                            backItemsetIterCopy,
+                                                            it, parent);
         }
         if(backItemsetIterCopy-- == seq->begin())
           break;
@@ -136,13 +145,18 @@ void GspHashTree::Node::checkClientSequence(GspSequence *seq, GspItemset *itemSe
       {
         for(; forwardItemIterCopy != forwardItemsetCopy->end(); ++forwardItemIterCopy)
         {
-          nodes_[Hash(*forwardItemIterCopy, MAX_NODES)]->checkClientSequence(seq, forwardItemsetCopy, it, forwardItemIterCopy,  windowSize,  minGap,  maxGap);
+          nodes_[Hash(*forwardItemIterCopy,
+                      MAX_NODES)]->CheckClientSequence(seq,
+                                                       forwardItemsetCopy,
+                                                       it, forwardItemIterCopy,
+                                                       parent);
         }
 
         if (++it == seq->end())
           break;
 
         forwardItemsetCopy = *it;
+
         if (maxGapPresent && forwardItemsetCopy->get_timestamp() > maxTime)
         {
           break;

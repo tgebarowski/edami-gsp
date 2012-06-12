@@ -1,9 +1,12 @@
-/*
- * gsp_sequence_pool.h
+/**
+ * @file  gsp_algorithm.h
  *
- *  Created on: Jun 9, 2012
- *      Author: adas
+ * @brief Generalized Sequential Patterns (GSP) algorithm implementation
+ *
+ * @author: Adam Szczepankiewicz <adam.szczepankiewicz@cern.ch>
+ * @date: Sat Jun 9 15:30:39 2012
  */
+
 
 #ifndef GSP_ALGORITHM_H_
 #define GSP_ALGORITHM_H_
@@ -13,47 +16,102 @@
 #include "gsp_sequence_reader.h"
 #include "gsp_sequence_pool.h"
 
+/**
+ * @brief Class Implementing GSP Algorithm interface
+ */
 class GspAlgorithm
 {
-  private:
-    std::auto_ptr<GspSequenceReader> reader;
-    unsigned  k;
-    unsigned minSupport;
-    int windowSize;
-    int minGap;
-    int maxGap;
-
-    GspSequencePool *frequent;
-    GspSequencePool *candidates;
-
-    bool finished;
-
   public:
-    GspAlgorithm(GspSequenceReader *inReader_, unsigned minSupport_, int windowSize_, int minGap_, int maxGap_);
+
+    GspAlgorithm(GspSequenceReader *in_reader,
+                 unsigned int min_support,
+                 unsigned int window_size,
+                 unsigned int min_gap,
+                 unsigned int max_gap);
+
     ~GspAlgorithm();
-    unsigned getK()
+
+    /**
+     * @brief Get number of Frequent Sequences
+     *
+     * @return integer representing frequent sequences count
+     */
+    unsigned int GetFrequentCount()
     {
-      return k;
-    }
-    unsigned getFrequentCnt()
-    {
-      if(frequent)
-        return frequent->getSequenceCnt();
+      if (frequent_)
+        return frequent_->GetSequenceCount();
       return 0;
     }
-    unsigned getCandidateCnt()
+
+    /**
+     * @brief Get number of Candidate Sequences
+     *
+     * @return integer representing candidate sequences count
+     */
+    unsigned int GetCandidateCount()
     {
-      if (candidates)
-        return candidates->getSequenceCnt();
+      if (candidates_)
+        return candidates_->GetSequenceCount();
       return 0;
     }
-    void printFrequentSeqs();
-    void printCandidateSeqs();
-    void runPass();
-    bool isFinished()
+
+    /**
+     * @brief Print all Frequent Sequences found 
+     */
+    void PrintFrequentSequences();
+
+    /**
+     * @brief Print all Candidate Sequences found 
+     */
+    void PrintCandidateSequences();
+
+    /**
+     * @brief Invoke one pass of GSP algorithm logic
+     */
+    void RunPass();
+
+    /**
+     * @brief Has algorithm finished_
+     */
+    bool IsFinished()
     {
-      return finished;
+      return finished_;
     }
+
+    /* Getters */
+
+    inline unsigned int min_support()
+    {
+      return min_support_;
+    }
+
+    inline unsigned int window_size()
+    {
+      return window_size_;
+    }
+
+    inline unsigned int min_gap() 
+    {
+      return min_gap_;
+    }
+
+    inline unsigned int max_gap() 
+    {
+      return max_gap_;
+    }
+
+  private:
+
+    std::auto_ptr<GspSequenceReader> reader_;
+    unsigned int min_support_; /**< Min support of sequence to consider as frequent */
+    unsigned int window_size_; /**< Window size - see GSP algorithm paper */
+    unsigned int min_gap_; /**< Min gap - see GSP algorithm paper */
+    unsigned int max_gap_; /** <Max gap - see GSP algorithm paper */
+
+    GspSequencePool *frequent_; /**< Pool with frequent sequences */
+    GspSequencePool *candidates_; /**< Pool with candidate sequences */
+ 
+    bool finished_; /**< Has algorith finished */
 };
 
 #endif /* GSP_ALGORITHM_H_ */

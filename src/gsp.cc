@@ -83,11 +83,11 @@ int main(int argc, char *argv[])
       GspAlgorithm gsp(reader, min_support, window_size,
                        min_gap, max_gap);      
 
-      gsp.printFrequentSeqs();
+      gsp.PrintFrequentSequences();
       std::cout << "\n\n";
-      gsp.printCandidateSeqs();
+      gsp.PrintCandidateSequences();
       std::cout << "\n\n";
-      gsp.runPass();
+      gsp.RunPass();
     }
     else
     {

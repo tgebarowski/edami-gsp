@@ -1,8 +1,12 @@
-/*
- * gsp_sequence_pool.h
+/* -*- mode: cc-mode; tab-width: 2; -*- */
+
+/**
+ * @file  gsp_sequence_pool.h
  *
- *  Created on: Jun 9, 2012
- *      Author: adas
+ * @brief GSP Sequence Pool
+ *
+ * @author: Adam Szczepankiewicz <adam.szczepankiewicz@cern.ch>
+ * @date: Sat Jun 9 15:30:39 2012
  */
 
 #ifndef GSP_SEQUENCE_POOL_H_
@@ -13,35 +17,43 @@
 #include "gsp_itemset_class.h"
 #include "gsp_sequence_class.h"
 
-//#include "gsp_sequence_class.h"
-//#include "gsp_sequence_reader.h"
+/* Predefinitions */
 class GspSequenceReader;
+class GspAlgorithm;
 
 
 class GspSequencePool
 {
-  private:
-    std::list<GspSequence *> sequences;
-    unsigned k;
-    unsigned minSupport;
-    int windowSize;
-    int minGap;
-    int maxGap;
   public:
-    GspSequencePool(unsigned minSupport_, int windowSize, int minGap, int maxGap);
-    GspSequencePool(GspSequenceReader *reader_, unsigned minSupport_, int windowSize, int minGap, int maxGap);
+ 
+    GspSequencePool(GspAlgorithm *parent);
+
+    GspSequencePool(GspSequenceReader *reader,
+                    GspAlgorithm *parent);
+
     ~GspSequencePool();
-    unsigned getK()
+
+    unsigned int GetK()
     {
-      return k;
+      return k_;
     }
-    unsigned getSequenceCnt()
+
+    unsigned int GetSequenceCount()
     {
-      return sequences.size();
+      return sequences_.size();
     }
-    GspSequencePool *join();
-    void countSupport(GspSequenceReader *reader);
-    void printSequences();
+
+    GspSequencePool *Join();
+
+    void CountSupport(GspSequenceReader *reader);
+
+    void PrintSequences();
+
+  private:
+
+    GspAlgorithm *parent_;
+    std::list<GspSequence *> sequences_;
+    unsigned int k_;
 };
 
 #endif /* GSP_SEQUENCE_POOL_H_ */
