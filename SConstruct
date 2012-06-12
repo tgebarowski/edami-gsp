@@ -60,4 +60,5 @@ object_list = env.Object(source = obj_sources)
 main_list = env.Object(source = main_sources)
 gsp = env.Program('gsp', source =main_list + object_list)
 
-BoostUnitTest(env, 'test', source=object_list + tortures)
+if env['PLATFORM'] != 'win32':
+   BoostUnitTest(env, 'test', source=object_list + tortures)
