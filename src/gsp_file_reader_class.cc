@@ -18,6 +18,7 @@
 GspFileReader::GspFileReader(string file_path)
   : input_file_(file_path.c_str())
 {
+  begin_iterator_ = input_file_;
   line_iterator_ = input_file_;
 }
 
@@ -29,7 +30,7 @@ GspFileReader::~GspFileReader()
 /* Documented in header */
 bool GspFileReader::RewindStream()
 {
-
+  line_iterator_ = begin_iterator_;
   return true;
 }
 
@@ -56,6 +57,11 @@ GspSequence *GspFileReader::GetNextSequence()
   return sequence;
 }
 
+/* Documented in header */
+bool GspFileReader::IsValid()
+{
+  return input_file_.is_open();
+}
 
 /* Documented in header */
 GspItemset * GspFileReader::GetNextItemset(string &p_id)

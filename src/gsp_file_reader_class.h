@@ -44,7 +44,7 @@ class GspSequence;
  *
  * Fields are separated by '#' symbol, while corresponding items with coma ','
  */
-class GspFileReader : GspSequenceReader
+class GspFileReader : public GspSequenceReader
 {
   public:
 
@@ -72,8 +72,16 @@ class GspFileReader : GspSequenceReader
      */
     virtual GspSequence *GetNextSequence();
 
+    /**
+     * @brief Is stream valid, could be opened ?
+     *
+     * @return Defines if stream could be opened
+     */
+    virtual bool IsValid();
+
   private:
     ifstream input_file_; /**< Object representing opened file */
+    istream_iterator<string> begin_iterator_; /**< Current line iterator */
     istream_iterator<string> line_iterator_; /**< Current line iterator */
 
     /**
