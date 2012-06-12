@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
                                 min_gap,
                                 max_gap))
   {
+    /* reader will be released by auto_ptr in gsp */
     GspSequenceReader *reader = new GspFileReader(data_file_path);
 
     if (reader != NULL &&
@@ -93,7 +94,6 @@ int main(int argc, char *argv[])
     {
       std::cout << "Could not open dataset file: " << data_file_path << std::endl;
     }
-    delete reader;
   }
   return 0;
 }
