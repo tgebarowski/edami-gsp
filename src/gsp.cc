@@ -68,10 +68,10 @@ int main(int argc, char *argv[])
 //  int min_gap;
 //  int max_gap;
 
-  GspAlgorithm gsp(CreateSampleArrayReader(), 1, 7, 0, 30);
-  std::cout<<std::endl;
-  gsp.PrintFrequentSequences();
-  std::cout<<std::endl;
+  GspAlgorithm gsp(CreateSampleArrayReader(), 1, 7, 0, 0);
+//  std::cout<<std::endl;
+//  gsp.PrintFrequentSequences();
+//  std::cout<<std::endl;
 
   while(!gsp.is_finished())
     gsp.RunPass();

@@ -23,15 +23,23 @@
 class GspAlgorithm
 {
   public:
-
+    /**
+     * @brief Construct the class with algorithm parameters
+     */
     GspAlgorithm(GspSequenceReader *in_reader,
                  unsigned int min_support,
                  int window_size,
                  int min_gap,
                  int max_gap);
 
+    /**
+     * @brief Destroy the object
+     */
     ~GspAlgorithm();
 
+    /**
+     * @brief Print the current frequent set into the specified stream
+     */
     void PrintResult(std::ostream &str);
 
     /**

@@ -47,80 +47,6 @@ GspSequence::~GspSequence()
 }
 
 /* Documented in header */
-/*
- * TODO needed?
- */
-//string GspSequence::GetItemByIndex(int n)
-//{
-//  int max_current_count = 0; /**< Maximum count achievable while
-//                                  processing current itemset */
-//  int max_next_count = 0; /**< Maximum count achievable while
-//                               processing next itemset */
-//  for (list<GspItemset *>::const_iterator it = itemsets_.begin();
-//       it != itemsets_.end();
-//       ++it)
-//  {
-//    max_next_count = max_current_count + (*it)->item_count();
-//    if (n >= max_current_count && n < max_next_count)
-//    {
-//      return (*it)->item_by_index(abs(max_current_count - n));
-//    }
-//    max_current_count = max_next_count;
-//  }
-//  return EMPTY_SET;
-//}
-
-
-/* Documented in header */
-/*
- * TODO needed?
- */
-//bool GspSequence::CompareWithSubsequence(GspSequence &s)
-//{
-//  GspSequence s1(*this);
-//  GspSequence s2(s);
-//
-//  GspItemset *s1_itemset_first = s1.get_first_itemset();
-//  GspItemset *s2_itemset_last = s2.get_last_itemset();
-//
-//  /* Remove first item from first sequence */
-//  if (s1_itemset_first != NULL)
-//  {
-//    s1_itemset_first->remove_first_item();
-//  }
-//  /* Remove last item from last sequence */
-//  if (s2_itemset_last != NULL)
-//  {
-//    s2_itemset_last->remove_last_item();
-//  }
-//  return (s1 == s2);
-//}
-
-/* Documented in header */
-/*
- * TODO needed?
- */
-//void GspSequence::AppendItemset(GspItemset *itemset)
-//{
-//  if (itemset != NULL)
-//  {
-//    /** Append to existing last itemset */
-//    if (itemset->item_count() == 1)
-//    {
-//      GspItemset *last_itemset = get_last_itemset();
-//      if (last_itemset != NULL)
-//      {
-//        last_itemset->add_item(itemset->item_by_index(0));
-//      }
-//    }
-//    /** Append as separate itemset */
-//    else if (itemset->item_count() > 1)
-//    {
-//      itemsets_.push_back(itemset);
-//    }
-//  }
-//}
-
 GspSequence *GspSequence::JoinSequences(GspSequence *right)
 {
 
@@ -128,20 +54,20 @@ GspSequence *GspSequence::JoinSequences(GspSequence *right)
   GspSequence *rightCopy = new GspSequence(*right);
   GspSequence *ret = NULL;
 
-  std::cout<<"\nJoining "<<leftCopy->ToString()<<" with "<<rightCopy->ToString()<<std::endl;
+//  std::cout<<"\nJoining "<<leftCopy->ToString()<<" with "<<rightCopy->ToString()<<std::endl;
   leftCopy->DropFirstItem();
   rightCopy->DropLastItem();
-  std::cout<<"Left drop: "<<leftCopy->ToString()<<std::endl;
-  std::cout<<"Right drop: "<<rightCopy->ToString()<<std::endl;
+//  std::cout<<"Left drop: "<<leftCopy->ToString()<<std::endl;
+//  std::cout<<"Right drop: "<<rightCopy->ToString()<<std::endl;
 
   if (*leftCopy == *rightCopy)
   {
     ret = new GspSequence(*this);
     ret->AppendSequence(right);
-    std::cout<<"Success: "<<ret->ToString()<<std::endl;
+//    std::cout<<"Success: "<<ret->ToString()<<std::endl;
   }
 
-  std::cout<<std::endl;
+//  std::cout<<std::endl;
 
   delete leftCopy;
   delete rightCopy;
@@ -149,6 +75,7 @@ GspSequence *GspSequence::JoinSequences(GspSequence *right)
   return ret;
 }
 
+/* Documented in header */
 void GspSequence::DropFirstItem()
 {
   if (itemsets_.size() > 0)
@@ -164,6 +91,7 @@ void GspSequence::DropFirstItem()
   }
 }
 
+/* Documented in header */
 void GspSequence::DropLastItem()
 {
   if (itemsets_.size() > 0)
@@ -187,7 +115,7 @@ std::string GspSequence::ToString() const
 
   for(std::list<GspItemset *>::const_iterator it = itemsets_.begin(); it != itemsets_.end(); ++it)
   {
-    strStream<<(*it)->get_timestamp()<<":(";
+    strStream<<"(";
     strStream<<(*it)->ToString();
     strStream<<")";
     if(size-- > 1)
@@ -220,6 +148,7 @@ bool GspSequence::operator==(const GspSequence &other) const
   return true;
 }
 
+/* Documented in header */
 void GspSequence::AppendSequence(GspSequence *right)
 {
   GspItemset *lastRight = *(--right->itemsets_.end());
@@ -237,21 +166,10 @@ void GspSequence::AppendSequence(GspSequence *right)
   }
 }
 
-/*
-class GspSequenceLL
-  {
-    private:
-
-
-      std::map<std::string, std::set<GspItemset *, GspItemsetComparer> > itemMap_;
-      void InsertItemset(GspItemset *itemSet);
-    public:
-      GspSequenceLL(GspSequence *sequence);
-  };
-  */
-
+/* Documented in header */
 void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
 {
+  //build the sorted list representation of the sequence
   OrderedItemMap itemListMap;
   for(GspSequence::IterType it = begin(); it != end(); ++it)
   {
@@ -271,27 +189,33 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
     }
   }
 
-  std::cout<<"\nMapa:\n";
-  for(OrderedItemMap::iterator mapYt = itemListMap.begin(); mapYt != itemListMap.end(); ++mapYt)
-  {
-    std::cout<<mapYt->first<<": ";
-    for(OrderedItemsetSet::iterator setYt = mapYt->second.begin(); setYt != mapYt->second.end(); ++setYt)
-      std::cout<<(*setYt)->get_timestamp()<<" ";
-    std::cout<<std::endl;
-  }
-  std::cout<<std::endl<<std::flush;
 
+//  std::cout<<"\nMapa:\n";
+//  for(OrderedItemMap::iterator mapYt = itemListMap.begin(); mapYt != itemListMap.end(); ++mapYt)
+//  {
+//    std::cout<<mapYt->first<<": ";
+//    for(OrderedItemsetSet::iterator setYt = mapYt->second.begin(); setYt != mapYt->second.end(); ++setYt)
+//      std::cout<<(*setYt)->get_timestamp()<<" ";
+//    std::cout<<std::endl;
+//  }
+//  std::cout<<std::endl<<std::flush;
+
+  //for every candidate sequence...
   for(std::set<GspSequence *>::const_iterator candIter = candidates_.begin(); candIter != candidates_.end(); ++candIter)
   {
     GspSequence *candSeq = *candIter;
+    //build a vector of objects representing the itemsets for the algorithm
     std::vector<ItemSetIterators *> candItemSets;
     candItemSets.clear();
     bool created = true;
     for(GspSequence::IterType itemsetIter = candSeq->begin(); itemsetIter != candSeq->end(); ++itemsetIter)
     {
+      //an itemset representation
       ItemSetIterators *candStruct = new ItemSetIterators(&itemListMap, *itemsetIter, windowSize);
+      //check if all the items in the candidate are present in the client
       if(!candStruct->init())
       {
+        //NO! definetly not a subsequence
         delete candStruct;
         created = false;
         break;
@@ -299,39 +223,51 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
       else
         candItemSets.push_back(candStruct);
     }
+    //get number of itemsets
     int maxEl = candItemSets.size();
+    //if the representation was correctly created, start matching the items
     if (created)
     {
+      //start with the first (earliest) itemset, perform the GSP matching phase
       int current = 0;
       int currentMin = -1;
       int currentTimeEnd = candItemSets[current]->getMaxTime();
 
       bool OK = true;
+      //until last itemset reached
       while(current != maxEl)
       {
+        //move the items in an itemset past the specified minimal timestamp
         if(candItemSets[current]->move(currentMin))
         {
+          //if possible, find the next mathing that fits in the sliding window
           if(candItemSets[current]->find())
           {
+            //if possible, determine the next step
             if(current == 0
                 || (maxGap <= 0) || (currentTimeEnd - candItemSets[current - 1]->getMinTime() <= maxGap))
             {
+              //if it was the first itemset or there is no max gap condition or the max
+              //gap i satisfied, move forward observing the min gap condition
               currentMin = currentTimeEnd + minGap;
               ++current;
             }
             else
             {
+              //the max gap wasn't satisfied, move backwards
               currentMin = candItemSets[current]->getMinTime() - maxGap;
               --current;
             }
           }
           else
           {
+            //no mathing in the sliding window, not a subsequence, break
             OK = false;
           }
         }
         else
         {
+          //no values past the specified time, not a subsequence
           OK = false;
         }
 
@@ -339,9 +275,11 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
           break;
       }
 
+      //if mathed, increase a support for the candidate
       if(current == maxEl)
         candSeq->increase_support();
     }
+    //delete the itemset representation
     for(int wt = 0; wt < maxEl; ++wt)
       delete candItemSets[wt];
   }

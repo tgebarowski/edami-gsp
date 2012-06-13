@@ -1,9 +1,12 @@
-/*
- * gsp_array_reader.h
+/**
+ * @file  gsp_array_reader.h
  *
- *  Created on: Jun 9, 2012
- *      Author: adas
+ * @brief Abstract interface for a data source stored in an internal array
+ *
+ * @author: Adam Szczepankiewicz <aszczepa@cern.ch>
+ * @date: Fri Jun 8 15:16:38 2012
  */
+
 
 #ifndef GSP_ARRAY_READER_H_
 #define GSP_ARRAY_READER_H_
@@ -11,8 +14,6 @@
 #include "gsp_sequence_reader.h"
 #include "gsp_sequence_class.h"
 #include "gsp_itemset_class.h"
-
-//class GspSequence;
 
 #include <vector>
 

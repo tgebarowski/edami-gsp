@@ -49,6 +49,7 @@ std::string GspItemset::ToString() const
   return strStream.str();
 }
 
+/* Documented in header */
 bool GspItemset::operator==(const GspItemset &right) const
 {
   if (this->itemset_.size() != right.itemset_.size())

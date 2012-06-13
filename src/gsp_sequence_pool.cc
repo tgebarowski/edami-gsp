@@ -35,6 +35,7 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader,
   std::map<std::string, unsigned> cand1;
   std::set<std::string> cand1Sequence;
 
+  //create 1-length candidates,
   while((seq = reader->GetNextSequence()))
   {
     cand1Sequence.clear();
@@ -190,8 +191,7 @@ void GspSequencePool::PrintResult(std::ostream &str)
 /* Documented in header */
 void GspSequencePool::CountSupport(GspSequenceReader *reader)
 {
-  //TODO cos madrzejszego niz 2:)
-  GspHashTree tree(k_, 2);
+  GspHashTree tree(k_, 4);
 
   for (std::list<GspSequence *>::const_iterator it = sequences_.begin();
        it != sequences_.end();
@@ -212,12 +212,11 @@ void GspSequencePool::CountSupport(GspSequenceReader *reader)
     tree.CheckClientSequence(seqTemp,
                              parent_);
 
-    std::cout<<"\nClient sequence: "<<seqTemp->ToString()<<" :"<<std::endl;
-    seqTemp->print_candidates();
-    std::cout<<std::flush;
+//    std::cout<<"\nClient sequence: "<<seqTemp->ToString()<<" :"<<std::endl;
+//    seqTemp->print_candidates();
+//    std::cout<<std::flush;
     seqTemp->CheckCandidates(parent_->window_size(), parent_->min_gap(), parent_->max_gap());
-    seqTemp->print_candidates();
-    //TODO add calculating support for candidates
+//    seqTemp->print_candidates();
     delete seqTemp;
   }
 }

@@ -15,7 +15,7 @@
 #include <list>
 #include <vector>
 
-#define MAX_NODES 11 /* Maximum number of Nodes pointed by Internal node */
+#define MAX_NODES 1009 /* Maximum number of Nodes pointed by Internal node */
 
 #include "gsp_common.h"
 #include "gsp_sequence_class.h"
@@ -62,19 +62,26 @@ class GspHashTree
     /**
      * @brief Hash function converting 
      *
-     * @param[in] sequence Pointer to @ref GspSequence for which items the hash
-     *                     function is invoked
-     * @param[in] n        Which item of sequence should be hashed
-     *
+     * @param[in] item the item to calculate the hash by summing all its positions
      * @param[in[ upper_bound Upper boundary for hash value
      */
-    static int Hash(const std::string &string, int upper_bound);
+    static int Hash(const std::string &item, int upper_bound);
 
+    /**
+     * @brief Prints the representation of the tree to the standard output
+     *
+     */
     void PrintTree()
     {
       root_->PrintNode();
     }
 
+    /**
+     * @brief Finds the candidate sequences for the client sequence
+     *
+     * @param[in] seq the client sequence
+     * @param[in[ parent the class containing the parameters of the GSP algorithm
+     */
     void CheckClientSequence(GspSequence *seq,
                              GspAlgorithm *parent);
 
@@ -149,7 +156,6 @@ class GspHashTree
          *            no more transforming is realized, instead element list
          *            may exceed max_sequences_ size
          */
-
          Node(int level, node_t type, int max_leaf, int max_level)
            : level_(level),
              type_(type),
@@ -160,12 +166,25 @@ class GspHashTree
              nodes_[it] = NULL;
          }
 
+         /**
+          * @brief Node destructor
+          */
          ~Node()
          {
            for(int it = 0; it < MAX_NODES; ++it)
              delete nodes_[it];
          }
 
+         /**
+          * @brief A recursive procedure that traverses the tree depth first to
+          * find the candidate sequences
+          *
+          * @param[in] seq Pointer to client sequence
+          * @param[in] itemSet the currently processed itemset
+          * @param[in] itemSetIter the iterator to the current itemset in the sequence
+          * @param[in] itemIter the iterator to current item in itemset
+          * @param[in] parent algorithm parameters (sliding window, max gap, min gap)
+          */
          void CheckClientSequence(GspSequence *seq,
                                   GspItemset *itemSet,
                                   GspSequence::IterType itemSetIter,
@@ -177,22 +196,26 @@ class GspHashTree
          *
          * @param[in] sequence Pointer to GspSequence *
          */
-
         void SetSequence(GspSequence *sequence)
         {
+          //if leaf
           if (type_ == NODE_LEAF)
           {
             //std::cout << "Leaf - Level: " << level_
    //                   << " Sequence: "<<sequence->ToString()<<std::endl;
+            //add sequence
             sequences_.push_back(sequence);
             if (sequences_.size() > max_sequences_ &&
                 level_ < max_level_)
             {
+              //if the number of sequences is bigger then specified, transform the node to interior
               TransformToInterior();
             }
           }
           else
           {
+            //if interior node, check whick child node to follow
+
             //std::cout << "Interior - Level: " << level_
     //                  << " Sequence: "<<sequence->ToString();
             GspItemset *curItemSet = sequence->current_itemset();
@@ -252,6 +275,19 @@ class GspHashTree
           //std::cout << "Transforming done for level "<< std::endl<<std::endl;
         }
 
+        /**
+         * @brief Clear the history of visits before the new sequence
+         */
+        void clear_history()
+        {
+          if (type_ ==  NODE_INTERIOR)
+          {
+            for(int it = 0; it < MAX_NODES; ++it)
+              nodes_[it]->clear_history();
+          }
+          visitedSet.clear();
+        }
+
       private:
         unsigned int level_; /**< Level of node */
         node_t type_;
@@ -263,6 +299,7 @@ class GspHashTree
 
         /* Interior node only */
         Node *nodes_[MAX_NODES]; /**< Nodes belonging to Node */
+        std::set<std::pair<std::string, int> > visitedSet; //history of items that visited the node
     };
 
     Node * root_; /**< HashTree root */

@@ -1,8 +1,10 @@
-/*
- * gsp_abstract_sequence_reader.h
+/**
+ * @file  gsp_sequence_reader.h
  *
- *  Created on: Jun 9, 2012
- *      Author: adas
+ * @brief Abstract interface for a data source
+ *
+ * @author: Adam Szczepankiewicz <aszczepa@cern.ch>
+ * @date: Fri Jun 8 15:14:38 2012
  */
 
 #ifndef GSP_SEQUENCE_READER_H_
@@ -13,6 +15,7 @@ class GspSequence;
 /**
  * @brief Abstract interface for sequence reader
  */
+
 class GspSequenceReader
 {
   public:

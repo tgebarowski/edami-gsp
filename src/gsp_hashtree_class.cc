@@ -10,10 +10,12 @@
  */
 //#include <stdio.h>
 
+#include <utility>
+
 #include "gsp_hashtree_class.h"
 #include "gsp_algorithm.h"
 
-
+/* Documented in header */
 enum GSP_STATUS GspHashTree::AddSequence(GspSequence *sequence)
 {
 //  std::cout << "Add To Tree: " + sequence->ToString() << std::endl;
@@ -58,6 +60,7 @@ void GspHashTree::CheckClientSequence(GspSequence *seq,
 {
   GspSequence::IterType itemSetIt = seq->begin();
   GspItemset::IterType itemIt = (*itemSetIt)->begin();
+  root_->clear_history();
   root_->CheckClientSequence(seq,
                              *itemSetIt,
                              itemSetIt,
@@ -74,17 +77,23 @@ void GspHashTree::Node::CheckClientSequence(GspSequence *seq,
 {
   if (type_ == NODE_LEAF)
   {
-    for(std::list<GspSequence *>::iterator it = sequences_.begin();
-        it != sequences_.end();
-        ++it)
+    //already visited by this item-timestamp? no need to do it again
+    if(visitedSet.insert(std::make_pair(*itemIter, itemSet->get_timestamp())).second)
     {
-      seq->add_candidate_sequence(*it);
+      for(std::list<GspSequence *>::iterator it = sequences_.begin();
+          it != sequences_.end();
+          ++it)
+      {
+        //add sequences from tree as candidates to the client
+        seq->add_candidate_sequence(*it);
+      }
     }
   }
   else
   {
     if(level_ == 0)
     {
+      //root - hash on every item
       for (itemSetIter = seq->begin();
            itemSetIter != seq->end();
            ++itemSetIter)
@@ -104,64 +113,68 @@ void GspHashTree::Node::CheckClientSequence(GspSequence *seq,
     }
     else
     {
-      bool maxGapPresent = (parent->max_gap() != 0);
-      int minTime = itemSet->get_timestamp() - parent->window_size();
-      int maxTime;
-      if (maxGapPresent)
+      //interior - hash on all values in specified time interval unless already done
+      if(visitedSet.insert(std::make_pair(*itemIter, itemSet->get_timestamp())).second)
       {
-        maxTime = itemSet->get_timestamp() +\
-          (parent->max_gap() > parent->window_size() ? parent->max_gap() : parent->window_size());
-      }
-
-      //TODO check?!
-      GspItemset::IterType backItemIterCopy(itemIter);
-      GspSequence::IterType backItemsetIterCopy(itemSetIter);
-      GspItemset *backItemsetCopy = itemSet;
-      do
-      {
-        for(GspItemset::IterType it = backItemsetCopy->begin();
-            it != backItemIterCopy; ++it)
+        bool maxGapPresent = (parent->max_gap() != 0);
+        int minTime = itemSet->get_timestamp() - parent->window_size();
+        int maxTime;
+        if (maxGapPresent)
         {
-          nodes_[Hash(*it, MAX_NODES)]->CheckClientSequence(seq,
-                                                            backItemsetCopy,
-                                                            backItemsetIterCopy,
-                                                            it, parent);
-        }
-        if(backItemsetIterCopy-- == seq->begin())
-          break;
-        backItemsetCopy = *backItemsetIterCopy;
-        if (backItemsetCopy->get_timestamp() < minTime)
-          break;
-        backItemIterCopy = backItemsetCopy->end();
-      } while(1);
-
-      //TODO check?!
-      GspItemset::IterType forwardItemIterCopy(itemIter);
-      GspSequence::IterType forwardItemsetIterCopy(itemSetIter);
-      ++forwardItemIterCopy;
-      GspItemset *forwardItemsetCopy = itemSet;
-      GspSequence::IterType it = forwardItemsetIterCopy;
-      while(1)
-      {
-        for(; forwardItemIterCopy != forwardItemsetCopy->end(); ++forwardItemIterCopy)
-        {
-          nodes_[Hash(*forwardItemIterCopy,
-                      MAX_NODES)]->CheckClientSequence(seq,
-                                                       forwardItemsetCopy,
-                                                       it, forwardItemIterCopy,
-                                                       parent);
+          maxTime = itemSet->get_timestamp() +\
+            (parent->max_gap() > parent->window_size() ? parent->max_gap() : parent->window_size());
         }
 
-        if (++it == seq->end())
-          break;
-
-        forwardItemsetCopy = *it;
-
-        if (maxGapPresent && forwardItemsetCopy->get_timestamp() > maxTime)
+        //TODO check?!
+        GspItemset::IterType backItemIterCopy(itemIter);
+        GspSequence::IterType backItemsetIterCopy(itemSetIter);
+        GspItemset *backItemsetCopy = itemSet;
+        do
         {
-          break;
+          for(GspItemset::IterType it = backItemsetCopy->begin();
+              it != backItemIterCopy; ++it)
+          {
+              nodes_[Hash(*it, MAX_NODES)]->CheckClientSequence(seq,
+                                                              backItemsetCopy,
+                                                              backItemsetIterCopy,
+                                                              it, parent);
+          }
+          if(backItemsetIterCopy-- == seq->begin())
+            break;
+          backItemsetCopy = *backItemsetIterCopy;
+          if (backItemsetCopy->get_timestamp() < minTime)
+            break;
+          backItemIterCopy = backItemsetCopy->end();
+        } while(1);
+
+        //TODO check?!
+        GspItemset::IterType forwardItemIterCopy(itemIter);
+        GspSequence::IterType forwardItemsetIterCopy(itemSetIter);
+        ++forwardItemIterCopy;
+        GspItemset *forwardItemsetCopy = itemSet;
+        GspSequence::IterType it = forwardItemsetIterCopy;
+        while(1)
+        {
+          for(; forwardItemIterCopy != forwardItemsetCopy->end(); ++forwardItemIterCopy)
+          {
+            nodes_[Hash(*forwardItemIterCopy,
+                        MAX_NODES)]->CheckClientSequence(seq,
+                                                         forwardItemsetCopy,
+                                                         it, forwardItemIterCopy,
+                                                         parent);
+          }
+
+          if (++it == seq->end())
+            break;
+
+          forwardItemsetCopy = *it;
+
+          if (maxGapPresent && forwardItemsetCopy->get_timestamp() > maxTime)
+          {
+            break;
+          }
+          forwardItemIterCopy = forwardItemsetCopy->begin();
         }
-        forwardItemIterCopy = forwardItemsetCopy->begin();
       }
     }
   }

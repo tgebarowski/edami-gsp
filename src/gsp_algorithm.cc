@@ -85,14 +85,14 @@ void GspAlgorithm::RunPass()
 
     return;
   }
-  std::cout<<std::endl;
+//  std::cout<<std::endl;
 
   candidates_->CountSupport(reader_.get());
-  std::cout<<std::endl;
-  candidates_->PrintSequences();
+//  std::cout<<std::endl;
+//  candidates_->PrintSequences();
   candidates_->DropSequences();
-  std::cout<<std::endl;
-  candidates_->PrintSequences();
+//  std::cout<<std::endl;
+//  candidates_->PrintSequences();
 
   if (candidates_->GetSequenceCount() == 0)
   {

@@ -12,32 +12,35 @@
 #ifndef __GSP_ITEMSET_H__
 #define __GSP_ITEMSET_H__
 
-//#include <vector>
 #include <set>
 #include <string>
-#include "gsp_common.h"
 
-//using namespace std;
+#include "gsp_common.h"
 
 /**
  * @class GspItemset
  *
- * @brief Class representing set of items aka itemset
+ * @brief Class representing set of items aka itemset. The itemset is identified by
+ * its timestamp. It provides an internal iteration mechanism as well as methods
+ * that return iterators to the first and last element of the set.
  */
 class GspItemset
 {
   public:
+    /**
+     * @class IterType
+     *
+     * @brief typedef for the iterator type used for iteration over items
+     */
     typedef std::set<std::string>::iterator IterType;
 
     /**
      * @brief Constructs Itemset object
      *
-     * @param[in] id String representing ID of user generating this itemset
      * @param[in] timestamp Timestamp
      *
      */
-    GspItemset(//string id = "",
-               int timestamp = 0);
+    GspItemset(int timestamp = 0);
 
     /**
      * @brief Copy constructor
@@ -82,7 +85,6 @@ class GspItemset
       itemset_.erase(--itemset_.end());
     }
 
-
     /**
      * @brief Get item count
      *
@@ -93,30 +95,6 @@ class GspItemset
     }
 
     /**
-     * @brief Get Nth item from the itemset
-     *
-     * @param[in] n Index
-     */
-    /*
-    string item_by_index(size_t n)
-    {
-      if (n < itemset_.size())
-        return itemset_[n];
-      return EMPTY_SET;
-    }
-    */
-
-    /**
-     * @brief Get ID
-     */
-    /*
-    inline string get_id()
-    {
-      return id_;
-    }
-    */
-
-    /**
      * @brief Get timestamp
      */
     inline int get_timestamp()
@@ -124,11 +102,19 @@ class GspItemset
       return timestamp_;
     }
     
+    /**
+     * @brief Set the internal iterator to the first element
+     */
     void rewind()
     {
       iter_ = itemset_.begin();
     }
 
+    /**
+     * @brief Move the internal iterator to the next element
+     *
+     * @return Boolean value telling if the next item existed
+     */
     bool next_item()
     {
       ++iter_;
@@ -138,6 +124,11 @@ class GspItemset
       return true;
     }
 
+    /**
+     * @brief Get an item pointed by the internal iterator
+     *
+     * @return Element pointed by internal iterator
+     */
     std::string current_item()
     {
       if (iter_ == itemset_.end())
@@ -146,22 +137,37 @@ class GspItemset
       return *iter_;
     }
 
+    /**
+     * @brief Get the iterator to the first item
+     *
+     * @return Iterator to the first item
+     */
     IterType begin()
     {
       return itemset_.begin();
     }
 
+    /**
+     * @brief Get the iterator to the last item
+     *
+     * @return Iterator to the last item
+     */
     IterType end()
     {
       return itemset_.end();
     }
 
+    /**
+     * @brief Compare two itemsets
+     *
+     * @param[in] right the itemset to compare with.
+     *
+     * @return Iterator to the last item
+     */
     bool operator==(const GspItemset &right) const;
 
   private:
-//    string id_; /**< Identifier of User generating this sequence  */
     int timestamp_; /**< Timestamp */
-    //vector<string> itemset_; /**< List of string itemset */
     std::set<std::string> itemset_;
     std::set<std::string>::const_iterator iter_;
 };
