@@ -12,6 +12,7 @@
 #define GSP_ALGORITHM_H_
 
 #include <memory>
+#include <fstream>
 
 #include "gsp_sequence_reader.h"
 #include "gsp_sequence_pool.h"
@@ -31,12 +32,14 @@ class GspAlgorithm
 
     ~GspAlgorithm();
 
+    void PrintResult(std::ostream &str);
+
     /**
      * @brief Get number of Frequent Sequences
      *
      * @return integer representing frequent sequences count
      */
-    unsigned int GetFrequentCount()
+    unsigned int get_frequent_count()
     {
       if (frequent_)
         return frequent_->GetSequenceCount();
@@ -48,7 +51,7 @@ class GspAlgorithm
      *
      * @return integer representing candidate sequences count
      */
-    unsigned int GetCandidateCount()
+    unsigned int get_candidate_count()
     {
       if (candidates_)
         return candidates_->GetSequenceCount();
@@ -73,7 +76,7 @@ class GspAlgorithm
     /**
      * @brief Has algorithm finished_
      */
-    bool IsFinished()
+    bool is_finished()
     {
       return finished_;
     }

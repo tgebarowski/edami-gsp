@@ -39,12 +39,12 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader,
   {
     cand1Sequence.clear();
     seq->rewind();
-    GspItemset *itemset = seq->currentItemset();
+    GspItemset *itemset = seq->current_itemset();
     while(itemset)
     {
       cand1Sequence.insert(itemset->begin(), itemset->end());
-      seq->nextItemset();
-      itemset = seq->currentItemset();
+      seq->next_itemset();
+      itemset = seq->current_itemset();
     }
 
     for (std::set<std::string>::const_iterator seqIt = cand1Sequence.begin();
@@ -56,7 +56,7 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader,
       else
         cand1[*seqIt] = 1;
     }
-
+//    std::cout<<seq->ToString()<<"\n";
     delete seq;
   }
 
@@ -69,7 +69,7 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader,
       GspItemset *itemset = new GspItemset();
       itemset->add_item(mapIter->first);
       seq->add_itemset(itemset);
-      seq->setSupport(mapIter->second);
+      seq->set_support(mapIter->second);
       sequences_.push_back(seq);
     }
   }
@@ -94,9 +94,9 @@ GspSequencePool *GspSequencePool::Join()
       //(L)(L)
       tempSeqL = *jt;
       tempSeqL->rewind();
-      tempItemsetL = tempSeqL->currentItemset();
+      tempItemsetL = tempSeqL->current_itemset();
       tempItemsetL->rewind();
-      std::string itemLeft = tempItemsetL->currentItem();
+      std::string itemLeft = tempItemsetL->current_item();
       newSeq = new GspSequence("");
       newItemset = new GspItemset(0);
       newItemset->add_item(itemLeft);
@@ -110,9 +110,9 @@ GspSequencePool *GspSequencePool::Join()
       {
         tempSeqR = *it;
         tempSeqR->rewind();
-        tempItemsetR = tempSeqR->currentItemset();
+        tempItemsetR = tempSeqR->current_itemset();
         tempItemsetR->rewind();
-        std::string itemRight = tempItemsetR->currentItem();
+        std::string itemRight = tempItemsetR->current_item();
         //(L)(R)
         newSeq = new GspSequence("");
         newItemset = new GspItemset(0);
@@ -156,7 +156,7 @@ GspSequencePool *GspSequencePool::Join()
           jt != sequences_.end();
           ++jt)
       {
-        candidate = (*it)->joinSequences(*jt);
+        candidate = (*it)->JoinSequences(*jt);
         if (candidate)
           ret->sequences_.push_back(candidate);
       }
@@ -173,7 +173,17 @@ void GspSequencePool::PrintSequences()
       it != sequences_.end();
       ++it)
   {
-    std::cout<<(*it)->ToString()<<" "<<(*it)->getSupport()<<"\n";
+    std::cout<<(*it)->ToString()<<" "<<(*it)->get_support()<<"\n";
+  }
+}
+
+void GspSequencePool::PrintResult(std::ostream &str)
+{
+  for(std::list<GspSequence *>::const_iterator it = sequences_.begin();
+      it != sequences_.end();
+      ++it)
+  {
+    str<<((*it)->ToString())<<"\n";
   }
 }
 
@@ -189,11 +199,11 @@ void GspSequencePool::CountSupport(GspSequenceReader *reader)
   {
     tree.AddSequence(*it);
   }
-  std::cout<<std::endl;
+ // std::cout<<std::endl;
 
   GspSequence *seqTemp;
 
-  tree.PrintTree();
+//  tree.PrintTree();
 
   //TODO sprawdzac returna
   reader->RewindStream();
@@ -202,10 +212,23 @@ void GspSequencePool::CountSupport(GspSequenceReader *reader)
     tree.CheckClientSequence(seqTemp,
                              parent_);
 
-    std::cout<<"Client sequence: "<<seqTemp->ToString()<<" :"<<std::endl;
-    seqTemp->printCandidates();
+    std::cout<<"\nClient sequence: "<<seqTemp->ToString()<<" :"<<std::endl;
+    seqTemp->print_candidates();
+    std::cout<<std::flush;
+    seqTemp->CheckCandidates(parent_->window_size(), parent_->min_gap(), parent_->max_gap());
+    seqTemp->print_candidates();
     //TODO add calculating support for candidates
     delete seqTemp;
+  }
+}
+
+void GspSequencePool::DropSequences()
+{
+  for(std::list<GspSequence *>::iterator it = sequences_.begin(); it !=  sequences_.end();)
+  {
+    std::list<GspSequence *>::iterator prevIt = it++;
+    if ((*prevIt)->get_support() <= parent_->min_support())
+      sequences_.erase(prevIt);
   }
 }
 
@@ -213,8 +236,8 @@ void GspSequencePool::CountSupport(GspSequenceReader *reader)
 GspSequencePool::~GspSequencePool()
 {
   for(std::list<GspSequence *>::iterator it = sequences_.begin();
-      it != sequences_.end();
-      ++it)
+      it != sequences_.end(); ++it
+      )
   {
     delete *it;
   }

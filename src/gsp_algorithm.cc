@@ -35,7 +35,7 @@ GspAlgorithm::GspAlgorithm(GspSequenceReader *in_reader,
             << " min-gap: " << ToString(min_gap_)\
             << " max-gap: " << ToString(max_gap_) << std::endl;
 
-  frequent_ = new GspSequencePool(reader_.get(), 
+  frequent_ = new GspSequencePool(reader_.get(),
                                   this);
 
   if (frequent_->GetSequenceCount() == 0)
@@ -49,6 +49,11 @@ GspAlgorithm::~GspAlgorithm()
 {
   delete frequent_;
   delete candidates_;
+}
+
+void GspAlgorithm::PrintResult(std::ostream &str)
+{
+  frequent_->PrintResult(str);
 }
 
 /* Documented in header */
@@ -75,14 +80,31 @@ void GspAlgorithm::RunPass()
   if (candidates_->GetSequenceCount() == 0)
   {
     finished_ = true;
+    delete candidates_;
+    candidates_ = NULL;
+
+    return;
+  }
+  std::cout<<std::endl;
+
+  candidates_->CountSupport(reader_.get());
+  std::cout<<std::endl;
+  candidates_->PrintSequences();
+  candidates_->DropSequences();
+  std::cout<<std::endl;
+  candidates_->PrintSequences();
+
+  if (candidates_->GetSequenceCount() == 0)
+  {
+    finished_ = true;
+    delete candidates_;
+    candidates_ = NULL;
 
     return;
   }
 
-//  candidates_->PrintSequences();
-  std::cout<<std::flush;
-
-  std::cout<<std::endl;
-  candidates_->CountSupport(reader_.get());
+  delete frequent_;
+  frequent_ = candidates_;
+  candidates_ = NULL;
 }
 

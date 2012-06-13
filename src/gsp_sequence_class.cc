@@ -15,7 +15,7 @@
 #include <sstream>
 
 /* Documented in header */
-GspSequence::GspSequence(const std::string &id_) : id(id_), support(0)
+GspSequence::GspSequence(const std::string &id) : id_(id), support_(0)
 {
 }
 
@@ -28,6 +28,9 @@ GspSequence::GspSequence(const GspSequence &src)
   {
     itemsets_.push_back(new GspItemset(**it));
   }
+  iter_ = itemsets_.begin();
+
+  support_ = 0;
 }
 
 
@@ -118,21 +121,27 @@ GspSequence::~GspSequence()
 //  }
 //}
 
-GspSequence *GspSequence::joinSequences(GspSequence *right)
+GspSequence *GspSequence::JoinSequences(GspSequence *right)
 {
 
   GspSequence *leftCopy = new GspSequence(*this);
   GspSequence *rightCopy = new GspSequence(*right);
   GspSequence *ret = NULL;
 
-  leftCopy->dropFirstItem();
-  rightCopy->dropLastItem();
+  std::cout<<"\nJoining "<<leftCopy->ToString()<<" with "<<rightCopy->ToString()<<std::endl;
+  leftCopy->DropFirstItem();
+  rightCopy->DropLastItem();
+  std::cout<<"Left drop: "<<leftCopy->ToString()<<std::endl;
+  std::cout<<"Right drop: "<<rightCopy->ToString()<<std::endl;
 
   if (*leftCopy == *rightCopy)
   {
-    GspSequence *ret = new GspSequence(*this);
-    ret->appendSequence(right);
+    ret = new GspSequence(*this);
+    ret->AppendSequence(right);
+    std::cout<<"Success: "<<ret->ToString()<<std::endl;
   }
+
+  std::cout<<std::endl;
 
   delete leftCopy;
   delete rightCopy;
@@ -140,21 +149,33 @@ GspSequence *GspSequence::joinSequences(GspSequence *right)
   return ret;
 }
 
-void GspSequence::dropFirstItem()
+void GspSequence::DropFirstItem()
 {
   if (itemsets_.size() > 0)
   {
-    GspItemset *firstItemSet = *itemsets_.begin();
-    firstItemSet->remove_first_item();
+    GspItemset *firstItemSet = itemsets_.front();
+    if (firstItemSet->item_count() == 1)
+    {
+      delete firstItemSet;
+      itemsets_.pop_front();
+    }
+    else
+      firstItemSet->remove_first_item();
   }
 }
 
-void GspSequence::dropLastItem()
+void GspSequence::DropLastItem()
 {
   if (itemsets_.size() > 0)
   {
-    GspItemset *lastItemSet = *(--itemsets_.end());
-    lastItemSet->remove_last_item();
+    GspItemset *lastItemSet = itemsets_.back();
+    if (lastItemSet->item_count() == 1)
+    {
+      delete lastItemSet;
+      itemsets_.pop_back();
+    }
+    else
+      lastItemSet->remove_last_item();
   }
 }
 
@@ -166,7 +187,7 @@ std::string GspSequence::ToString() const
 
   for(std::list<GspItemset *>::const_iterator it = itemsets_.begin(); it != itemsets_.end(); ++it)
   {
-    strStream<<"(";
+    strStream<<(*it)->get_timestamp()<<":(";
     strStream<<(*it)->ToString();
     strStream<<")";
     if(size-- > 1)
@@ -199,7 +220,7 @@ bool GspSequence::operator==(const GspSequence &other) const
   return true;
 }
 
-void GspSequence::appendSequence(GspSequence *right)
+void GspSequence::AppendSequence(GspSequence *right)
 {
   GspItemset *lastRight = *(--right->itemsets_.end());
 
@@ -211,7 +232,119 @@ void GspSequence::appendSequence(GspSequence *right)
   {
     GspItemset *lastLeft = *(--this->itemsets_.end());
     lastRight->rewind();
-    std::string insertItem = lastRight->currentItem();
+    std::string insertItem = lastRight->current_item();
     lastLeft->add_item(insertItem);
   }
 }
+
+/*
+class GspSequenceLL
+  {
+    private:
+
+
+      std::map<std::string, std::set<GspItemset *, GspItemsetComparer> > itemMap_;
+      void InsertItemset(GspItemset *itemSet);
+    public:
+      GspSequenceLL(GspSequence *sequence);
+  };
+  */
+
+void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
+{
+  OrderedItemMap itemListMap;
+  for(GspSequence::IterType it = begin(); it != end(); ++it)
+  {
+    for (GspItemset::IterType itemIter = (*it)->begin(); itemIter != (*it)->end(); ++itemIter)
+    {
+      std::string item = *itemIter;
+      if (itemListMap.find(item) != itemListMap.end())
+      {
+        itemListMap[item].insert(*it);
+      }
+      else
+      {
+        std::set<GspItemset *, GspItemsetComparer> timestampList;
+        timestampList.insert(*it);
+        itemListMap[item] = timestampList;
+      }
+    }
+  }
+
+  std::cout<<"\nMapa:\n";
+  for(OrderedItemMap::iterator mapYt = itemListMap.begin(); mapYt != itemListMap.end(); ++mapYt)
+  {
+    std::cout<<mapYt->first<<": ";
+    for(OrderedItemsetSet::iterator setYt = mapYt->second.begin(); setYt != mapYt->second.end(); ++setYt)
+      std::cout<<(*setYt)->get_timestamp()<<" ";
+    std::cout<<std::endl;
+  }
+  std::cout<<std::endl<<std::flush;
+
+  for(std::set<GspSequence *>::const_iterator candIter = candidates_.begin(); candIter != candidates_.end(); ++candIter)
+  {
+    GspSequence *candSeq = *candIter;
+    std::vector<ItemSetIterators *> candItemSets;
+    candItemSets.clear();
+    bool created = true;
+    for(GspSequence::IterType itemsetIter = candSeq->begin(); itemsetIter != candSeq->end(); ++itemsetIter)
+    {
+      ItemSetIterators *candStruct = new ItemSetIterators(&itemListMap, *itemsetIter, windowSize);
+      if(!candStruct->init())
+      {
+        delete candStruct;
+        created = false;
+        break;
+      }
+      else
+        candItemSets.push_back(candStruct);
+    }
+    int maxEl = candItemSets.size();
+    if (created)
+    {
+      int current = 0;
+      int currentMin = -1;
+      int currentTimeEnd = candItemSets[current]->getMaxTime();
+
+      bool OK = true;
+      while(current != maxEl)
+      {
+        if(candItemSets[current]->move(currentMin))
+        {
+          if(candItemSets[current]->find())
+          {
+            if(current == 0
+                || (maxGap <= 0) || (currentTimeEnd - candItemSets[current - 1]->getMinTime() <= maxGap))
+            {
+              currentMin = currentTimeEnd + minGap;
+              ++current;
+            }
+            else
+            {
+              currentMin = candItemSets[current]->getMinTime() - maxGap;
+              --current;
+            }
+          }
+          else
+          {
+            OK = false;
+          }
+        }
+        else
+        {
+          OK = false;
+        }
+
+        if(!OK)
+          break;
+      }
+
+      if(current == maxEl)
+        candSeq->increase_support();
+    }
+    for(int wt = 0; wt < maxEl; ++wt)
+      delete candItemSets[wt];
+  }
+}
+
+

@@ -68,7 +68,7 @@ class GspHashTree
      *
      * @param[in[ upper_bound Upper boundary for hash value
      */
-    static int Hash(std::string string, int upper_bound);
+    static int Hash(const std::string &string, int upper_bound);
 
     void PrintTree()
     {
@@ -118,7 +118,7 @@ class GspHashTree
              for (std::list<GspSequence *>::iterator it = sequences_.begin();
                   it != sequences_.end(); ++it)
              {
-               std::cout << (*it)->ToString() << " " << (*it)->getSupport()<<std::endl;
+               std::cout << (*it)->ToString() << " " << (*it)->get_support()<<std::endl;
              }
              std::cout<<std::endl;
            }
@@ -130,7 +130,7 @@ class GspHashTree
                std::cout<<"Child "<<it<<":"<<std::endl;
                nodes_[it]->PrintNode();
              }
-             std::cout << std::endl<<"END Interior node, level: "\
+             std::cout << std::endl<<"END Interior node, level: "
                        << level_<<std::endl<<std::endl;
            }
          }
@@ -182,8 +182,8 @@ class GspHashTree
         {
           if (type_ == NODE_LEAF)
           {
-            std::cout << "Leaf - Level: " << level_\
-                      << " Sequence: "<<sequence->ToString()<<std::endl;
+            //std::cout << "Leaf - Level: " << level_
+   //                   << " Sequence: "<<sequence->ToString()<<std::endl;
             sequences_.push_back(sequence);
             if (sequences_.size() > max_sequences_ &&
                 level_ < max_level_)
@@ -193,16 +193,16 @@ class GspHashTree
           }
           else
           {
-            std::cout << "Interior - Level: " << level_\
-                      << " Sequence: "<<sequence->ToString();
-            GspItemset *curItemSet = sequence->currentItemset();
-            std::string curItem = curItemSet->currentItem();
-            if(!curItemSet->nextItem())
-              sequence->nextItemset();
+            //std::cout << "Interior - Level: " << level_
+    //                  << " Sequence: "<<sequence->ToString();
+            GspItemset *curItemSet = sequence->current_itemset();
+            std::string curItem = curItemSet->current_item();
+            if(!curItemSet->next_item())
+              sequence->next_itemset();
 
             int hash = Hash(curItem, MAX_NODES);
-            std::cout << " Itemset: "<<curItemSet->ToString()\
-                      << " Item: " <<curItem<< " Hash: "<<hash<<std::endl;
+            //std::cout << " Itemset: "<<curItemSet->ToString()
+        //              << " Item: " <<curItem<< " Hash: "<<hash<<std::endl;
             nodes_[hash]->SetSequence(sequence);
           }
         }
@@ -212,9 +212,9 @@ class GspHashTree
          */
         void TransformToInterior()
         {
-          std::cout << std::endl\
-                    <<  "Transforming from leaf to interior at level: "\
-                    << level_ << std::endl;
+          //std::cout << std::endl
+    //                <<  "Transforming from leaf to interior at level: "
+     //               << level_ << std::endl;
           if (type_ == NODE_LEAF)
           {
             type_ =  NODE_INTERIOR;
@@ -228,28 +228,28 @@ class GspHashTree
                  it != sequences_.end();
                  ++it)
             {
-              GspItemset *curItemSet = (*it)->currentItemset();
-              std::cout<<(*it)->ToString();
-              std::cout<<" A"<<std::flush;
-              std::string curItem = curItemSet->currentItem();
-              std::cout<<" B"<<std::flush;
-              if(!curItemSet->nextItem())
+              GspItemset *curItemSet = (*it)->current_itemset();
+              //std::cout<<(*it)->ToString();
+              //std::cout<<" A"<<std::flush;
+              std::string curItem = curItemSet->current_item();
+              //std::cout<<" B"<<std::flush;
+              if(!curItemSet->next_item())
               {
-                std::cout<<" C"<<std::flush;
-                (*it)->nextItemset();
+                //std::cout<<" C"<<std::flush;
+                (*it)->next_itemset();
               }
-              std::cout<<" D"<<std::endl;
+              //std::cout<<" D"<<std::endl;
 
               int hash = Hash(curItem, MAX_NODES);
-              std::cout << "Interior - Level: " << level_\
-                        <<" Sequence: "<<(*it)->ToString()\
-                        <<" Itemset: "<<curItemSet->ToString()\
-                        <<" Item: "<<curItem<< " Hash: "<<hash<<std::endl;
+              //std::cout << "Interior - Level: " << level_
+          //              <<" Sequence: "<<(*it)->ToString()
+           //             <<" Itemset: "<<curItemSet->ToString()
+            //            <<" Item: "<<curItem<< " Hash: "<<hash<<std::endl;
               nodes_[hash]->SetSequence((*it));
             }
             sequences_.clear();
           }
-          std::cout << "Transforming done for level "<< std::endl<<std::endl;
+          //std::cout << "Transforming done for level "<< std::endl<<std::endl;
         }
 
       private:

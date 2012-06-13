@@ -13,6 +13,7 @@
 #define GSP_SEQUENCE_POOL_H_
 
 #include <list>
+#include <fstream>
 
 #include "gsp_itemset_class.h"
 #include "gsp_sequence_class.h"
@@ -46,7 +47,11 @@ class GspSequencePool
 
     void CountSupport(GspSequenceReader *reader);
 
+    void DropSequences();
+
     void PrintSequences();
+
+    void PrintResult(std::ostream &str);
 
   private:
 

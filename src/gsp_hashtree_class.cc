@@ -8,7 +8,7 @@
  * @author: Tomasz Gebarowski <gebarowski@gmail.com>
  * @date: Fri May 18 15:14:38 2012
  */
-#include <stdio.h>
+//#include <stdio.h>
 
 #include "gsp_hashtree_class.h"
 #include "gsp_algorithm.h"
@@ -16,9 +16,9 @@
 
 enum GSP_STATUS GspHashTree::AddSequence(GspSequence *sequence)
 {
-  std::cout << "Add To Tree: " + sequence->ToString() << std::endl;
+//  std::cout << "Add To Tree: " + sequence->ToString() << std::endl;
 
-  sequence->rewindAll();
+  sequence->rewind_all();
   root_->SetSequence(sequence);
 
   return GSP_OK;
@@ -41,7 +41,7 @@ GspHashTree::~GspHashTree()
 }
 
 /* Documented in header */
-int GspHashTree::Hash(std::string item, int upper_bound)
+int GspHashTree::Hash(const std::string &item, int upper_bound)
 {
   int stringSum = 0;
   int stringSize = item.size();
@@ -78,7 +78,7 @@ void GspHashTree::Node::CheckClientSequence(GspSequence *seq,
         it != sequences_.end();
         ++it)
     {
-      seq->addCandidateSequence(*it);
+      seq->add_candidate_sequence(*it);
     }
   }
   else

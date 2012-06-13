@@ -15,9 +15,9 @@
 #include <list>
 #include <string>
 #include <set>
+#include <map>
 
 #include "gsp_itemset_class.h"
-
 
 /**
  * @class GspSequence
@@ -27,7 +27,7 @@
 class GspSequence
 {
   public:
-    typedef std::list<GspItemset *>::const_iterator IterType;
+    typedef std::list<GspItemset *>::iterator IterType;
     /**
      * @brief Constructs Sequence object
      */
@@ -83,7 +83,6 @@ class GspSequence
      */
     std::string ToString() const;
 
-
     /* Operators */
 
     /**
@@ -122,35 +121,35 @@ class GspSequence
 
     void rewind()
     {
-      iter = itemsets_.begin();
+      iter_ = itemsets_.begin();
     }
 
-    void rewindAll()
+    void rewind_all()
     {
       rewind();
       for(std::list<GspItemset *>::const_iterator it = itemsets_.begin(); it != itemsets_.end(); ++it)
         (*it)->rewind();
     }
 
-    bool nextItemset()
+    bool next_itemset()
     {
-      ++iter;
+      ++iter_;
 
-      if (iter != itemsets_.end())
+      if (iter_ != itemsets_.end())
       {
-        (*iter)->rewind();
+        (*iter_)->rewind();
         return true;
       }
 
       return false;
     }
 
-    GspItemset *currentItemset()
+    GspItemset *current_itemset()
     {
-      if (iter == itemsets_.end())
+      if (iter_ == itemsets_.end())
         return NULL;
 
-      return *iter;
+      return *iter_;
     }
 
     IterType begin()
@@ -163,56 +162,210 @@ class GspSequence
       return itemsets_.end();
     }
 
-    void increaseSupport()
+    void increase_support()
     {
-      ++support;
+      ++support_;
     }
 
-    unsigned getSupport()
+    unsigned get_support()
     {
-      return support;
+      return support_;
     }
 
-    std::string getId()
+    std::string get_id()
     {
-      return id;
+      return id_;
     }
 
-    void setSupport(unsigned support_)
+    void set_support(unsigned support)
     {
-      support = support_;
+      support_ = support;
     }
 
-    GspSequence *joinSequences(GspSequence *right);
+    GspSequence *JoinSequences(GspSequence *right);
 
-    void dropFirstItem();
+    void DropFirstItem();
 
-    void dropLastItem();
+    void DropLastItem();
 
-    void appendSequence(GspSequence *right);
+    void AppendSequence(GspSequence *right);
 
-    void addCandidateSequence(GspSequence *toAdd)
+    void CheckCandidates(int windowSize, int minGap, int maxGap);
+
+    inline void add_candidate_sequence(GspSequence *toAdd)
     {
-      candidates.insert(toAdd);
+      candidates_.insert(toAdd);
     }
 
-    void printCandidates()
+    inline void print_candidates()
     {
-      for (std::set<GspSequence *>::iterator it = candidates.begin(); it != candidates.end(); ++it)
+      for (std::set<GspSequence *>::iterator it = candidates_.begin(); it != candidates_.end(); ++it)
       {
         std::cout<<(*it)->ToString()<<std::endl;
       }
     }
 
   private:
-
     std::list<GspItemset *> itemsets_; /**< List of itemsets */
-    std::list<GspItemset *>::const_iterator iter;
-    std::string id;
-    unsigned support;
-    std::set<GspSequence *> candidates;
+    std::list<GspItemset *>::const_iterator iter_;
+    std::string id_;
+    unsigned support_;
+    std::set<GspSequence *> candidates_;
 
+    class GspItemsetComparer
+    {
+      public:
+        bool operator()(GspItemset *a, GspItemset *b)
+        {
+          return a->get_timestamp() < b->get_timestamp();
+        }
+    };
+
+    typedef std::set<GspItemset *, GspItemsetComparer> OrderedItemsetSet;
+    typedef std::map<std::string, OrderedItemsetSet> OrderedItemMap;
+
+    class GspItemIterator
+    {
+      private:
+        OrderedItemsetSet *itemList_;
+        OrderedItemsetSet::const_iterator iter_;
+      public:
+        class Comparer
+        {
+          public:
+            bool operator()(GspItemIterator *a, GspItemIterator *b)
+            {
+              return (*(a->iter_))->get_timestamp() < (*(b->iter_))->get_timestamp();
+            }
+        };
+
+        GspItemIterator(OrderedItemsetSet *itemList)
+          : itemList_(itemList), iter_(itemList_->begin())
+        {
+        }
+
+        bool is_valid()
+        {
+          return iter_ != itemList_->end();
+        }
+
+        int get_timestamp()
+        {
+          return (*iter_)->get_timestamp();
+        }
+
+        bool next()
+        {
+          ++iter_;
+          return is_valid();
+        }
+
+        bool move(int time = -1)
+        {
+          while(iter_ != itemList_ -> end())
+          {
+            if (get_timestamp() > time)
+              return true;
+            ++iter_;
+          }
+          return false;
+        }
+    };
+
+    class ItemSetIterators
+    {
+      private:
+        typedef std::set<GspItemIterator *, GspItemIterator::Comparer>::iterator IterType;
+        std::set<GspItemIterator *, GspItemIterator::Comparer> items_;
+        OrderedItemMap *itemMap_;
+        GspItemset *itemSet_;
+        int windowSize_;
+
+      public:
+        ItemSetIterators(OrderedItemMap *itemMap, GspItemset *itemSet, int windowSize)
+          : itemMap_(itemMap), itemSet_(itemSet), windowSize_(windowSize)
+        {
+        }
+
+        ~ItemSetIterators()
+        {
+          for(IterType it = items_.begin(); it != items_.end();)
+          {
+            delete *it++;
+          }
+        }
+
+        bool init()
+        {
+          for(GspItemset::IterType it = itemSet_->begin(); it != itemSet_->end(); ++it)
+          {
+            std::string item = *it;
+            OrderedItemMap::iterator mapIt = itemMap_->find(item);
+            if(mapIt == itemMap_->end())
+            {
+              return false;
+            }
+
+            items_.insert(new GspItemIterator(&(mapIt->second)));
+
+          }
+
+          return true;
+        }
+
+        bool move(int val)
+        {
+          while(1)
+          {
+            IterType first = items_.begin();
+            GspItemIterator *firstItem = *first;
+            if(firstItem->get_timestamp() > val)
+              break;;
+            items_.erase(first);
+            if(firstItem->move(val))
+              items_.insert(firstItem);
+            else
+            {
+              delete firstItem;
+              return false;
+            }
+          }
+
+          return true;
+        }
+
+        bool find()
+        {
+          while(1)
+          {
+            int maxTime = (*(--items_.end()))->get_timestamp();
+            IterType first = items_.begin();
+            GspItemIterator *firstItem = *(first);
+            if (maxTime - firstItem->get_timestamp() <= windowSize_)
+              break;
+            items_.erase(first);
+            if(firstItem->next())
+              items_.insert(firstItem);
+            else
+            {
+              delete firstItem;
+              return false;
+            }
+          }
+
+          return true;
+        }
+
+        int getMinTime()
+        {
+          return (*items_.begin())->get_timestamp();
+        }
+
+        int getMaxTime()
+        {
+          return (*(--items_.end()))->get_timestamp();
+        }
+    };
 };
-
 
 #endif /* __GSP_SEQUENCE_H__ */

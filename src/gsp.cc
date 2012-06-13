@@ -62,13 +62,28 @@ bool ParseCommandLineArguments(int argc, char *argv[],
 
 int main(int argc, char *argv[])
 {
-  std::string data_file_path;
-  int min_support;
-  int window_size;
-  int min_gap;
-  int max_gap;
+//  std::string data_file_path;
+//  int min_support;
+//  int window_size;
+//  int min_gap;
+//  int max_gap;
+
+  GspAlgorithm gsp(CreateSampleArrayReader(), 1, 7, 0, 30);
+  std::cout<<std::endl;
+  gsp.PrintFrequentSequences();
+  std::cout<<std::endl;
+
+  while(!gsp.is_finished())
+    gsp.RunPass();
+
+  std::cout<<std::endl<<std::endl<<"Result:"<<std::endl;
+  gsp.PrintResult(std::cout);
+
+  std::cout<<std::endl;
 
 
+
+  /*
   if (ParseCommandLineArguments(argc, argv,
                                 data_file_path,
                                 min_support,
@@ -76,7 +91,7 @@ int main(int argc, char *argv[])
                                 min_gap,
                                 max_gap))
   {
-    /* reader will be released by auto_ptr in gsp */
+    // reader will be released by auto_ptr in gsp
     GspSequenceReader *reader = new GspFileReader(data_file_path);
 
     if (reader != NULL &&
@@ -84,7 +99,7 @@ int main(int argc, char *argv[])
     {
       GspAlgorithm gsp(reader, min_support, window_size,
                        min_gap, max_gap);
-//      GspAlgorithm gsp(CreateSampleArrayReader(), 1, 0, 0, 10);
+//
 
 //      gsp.PrintFrequentSequences();
       std::cout << "\n\n";
@@ -97,6 +112,7 @@ int main(int argc, char *argv[])
       std::cout << "Could not open dataset file: " << data_file_path << std::endl;
     }
   }
+  */
 
   std::cout<<"Exiting!!";
   return 0;
@@ -109,27 +125,27 @@ GspArrayReader *CreateSampleArrayReader()
 
   GspSequence *seq = new GspSequence("C1");
   GspItemset *itSet = new GspItemset(1);
-  itSet->add_item("R");
+  itSet->add_item("Ringworld");
   seq->add_itemset(itSet);
   itSet = new GspItemset(2);
-  itSet->add_item("F");
+  itSet->add_item("Foundation");
   seq->add_itemset(itSet);
   itSet = new GspItemset(15);
-  itSet->add_item("S");
-  itSet->add_item("T");
+  itSet->add_item("Ringworld Engineers");
+  itSet->add_item("Second Foundation");
   seq->add_itemset(itSet);
   sequences.push_back(seq);
 
   seq = new GspSequence("C2");
   itSet = new GspItemset(1);
-  itSet->add_item("F");
-  itSet->add_item("R");
+  itSet->add_item("Foundation");
+  itSet->add_item("Ringworld");
   seq->add_itemset(itSet);
   itSet = new GspItemset(20);
-  itSet->add_item("G");
+  itSet->add_item("Foundation and Empire");
   seq->add_itemset(itSet);
   itSet = new GspItemset(50);
-  itSet->add_item("S");
+  itSet->add_item("Ringworld Engineers");
   seq->add_itemset(itSet);
   sequences.push_back(seq);
 

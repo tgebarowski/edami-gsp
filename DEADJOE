@@ -1,0 +1,29 @@
+
+*** These modified files were found in JOE when it aborted on Tue Jun 12 16:23:29 2012
+*** JOE was aborted because the terminal closed
+
+*** File '(Unnamed)'
+.git/COMMIT_EDITMSG
+
+*** File '.git/COMMIT_EDITMSG'
+Merge branch 'master' of https://github.com/tgebarowski/edami-gsp into adas
+
+Conflicts:
+	src/gsp.cc
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please remove the file
+#	.git/MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Committer: Adam Szczepankiewicz <adas@adas-lap-xub.(none)>
+#
+# On branch adas
+# Changes to be committed:
+#
+#	modified:   src/gsp.cc
+#

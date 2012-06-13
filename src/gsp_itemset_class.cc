@@ -16,13 +16,13 @@
 GspItemset::GspItemset(//string id,
                        int timestamp)
   : //id_(id),
-    timestamp_(timestamp), itemset_(), iter(itemset_.begin())
+    timestamp_(timestamp), itemset_(), iter_(itemset_.begin())
 {
 }
 
 /* Documented in header */
 GspItemset::GspItemset(const GspItemset &src)
-  : timestamp_(src.timestamp_), itemset_(src.itemset_), iter(itemset_.begin())
+  : timestamp_(src.timestamp_), itemset_(src.itemset_), iter_(itemset_.begin())
 {
 
 }

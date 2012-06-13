@@ -27,7 +27,7 @@
 class GspItemset
 {
   public:
-    typedef std::set<std::string>::const_iterator IterType;
+    typedef std::set<std::string>::iterator IterType;
 
     /**
      * @brief Constructs Itemset object
@@ -126,32 +126,32 @@ class GspItemset
     
     void rewind()
     {
-      iter = itemset_.begin();
+      iter_ = itemset_.begin();
     }
 
-    bool nextItem()
+    bool next_item()
     {
-      ++iter;
-      if (iter == itemset_.end())
+      ++iter_;
+      if (iter_ == itemset_.end())
         return false;
 
       return true;
     }
 
-    std::string currentItem()
+    std::string current_item()
     {
-      if (iter == itemset_.end())
+      if (iter_ == itemset_.end())
         return "";
 
-      return *iter;
+      return *iter_;
     }
 
-    std::set<std::string>::const_iterator begin()
+    IterType begin()
     {
       return itemset_.begin();
     }
 
-    std::set<std::string>::const_iterator end()
+    IterType end()
     {
       return itemset_.end();
     }
@@ -163,7 +163,7 @@ class GspItemset
     int timestamp_; /**< Timestamp */
     //vector<string> itemset_; /**< List of string itemset */
     std::set<std::string> itemset_;
-    std::set<std::string>::const_iterator iter;
+    std::set<std::string>::const_iterator iter_;
 };
 
 
