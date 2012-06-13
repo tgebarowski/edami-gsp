@@ -19,7 +19,7 @@ GspFileReader::GspFileReader(string file_path)
   : input_file_(file_path.c_str())
 {
   begin_iterator_ = input_file_;
-  line_iterator_ = input_file_;
+  line_iterator_ = begin_iterator_;
 }
 
 /* Documented in header */
