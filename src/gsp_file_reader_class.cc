@@ -30,8 +30,13 @@ GspFileReader::~GspFileReader()
 /* Documented in header */
 bool GspFileReader::RewindStream()
 {
+  input_file_.clear();
+  input_file_.seekg(0, ios::beg);
+
+  begin_iterator_ = input_file_;
   line_iterator_ = begin_iterator_;
-  return true;
+
+  return IsValid();
 }
 
 /* Documented in header */
