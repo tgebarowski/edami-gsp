@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE(tc_filereader)
   
   while ((sequence = fr.GetNextSequence()) != NULL)
   {
-    cout << "ID:" << sequence->ToString() << endl;
+    cout << sequence->ToString() << endl;
   }
   cout << "End of Data Store testing..." << endl;
 }
