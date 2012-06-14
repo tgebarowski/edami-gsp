@@ -59,6 +59,10 @@ class GspItemset
      */
     std::string ToString() const;
 
+    std::string ToStringNoBrac();
+
+    std::string ToStringNoBracNoLast();
+
     /**
      * @brief Add item by appending it to the end of itemset
      *

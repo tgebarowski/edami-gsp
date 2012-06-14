@@ -9,8 +9,8 @@
  * @date: Fri May 18 15:46:11 2012
  */
 
-#include "gsp_sequence_class.h"
 #include "gsp_itemset_class.h"
+#include "gsp_sequence_class.h"
 #include <cmath>
 #include <sstream>
 
@@ -111,15 +111,10 @@ void GspSequence::DropLastItem()
 std::string GspSequence::ToString() const
 {
   std::stringstream strStream;
-  unsigned size = itemsets_.size();
 
   for(std::list<GspItemset *>::const_iterator it = itemsets_.begin(); it != itemsets_.end(); ++it)
   {
-    strStream<<"(";
     strStream<<(*it)->ToString();
-    strStream<<")";
-    if(size-- > 1)
-      strStream<<",";
   }
 
   return strStream.str();
@@ -160,9 +155,7 @@ void GspSequence::AppendSequence(GspSequence *right)
   else
   {
     GspItemset *lastLeft = *(--this->itemsets_.end());
-    lastRight->rewind();
-    std::string insertItem = lastRight->current_item();
-    lastLeft->add_item(insertItem);
+    lastLeft->add_item(*(--lastRight->end()));
   }
 }
 
@@ -189,21 +182,23 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
     }
   }
 
-
-//  std::cout<<"\nMapa:\n";
-//  for(OrderedItemMap::iterator mapYt = itemListMap.begin(); mapYt != itemListMap.end(); ++mapYt)
-//  {
-//    std::cout<<mapYt->first<<": ";
-//    for(OrderedItemsetSet::iterator setYt = mapYt->second.begin(); setYt != mapYt->second.end(); ++setYt)
-//      std::cout<<(*setYt)->get_timestamp()<<" ";
-//    std::cout<<std::endl;
-//  }
-//  std::cout<<std::endl<<std::flush;
+/*  std::cout<<ToString()<<std::endl<<std::endl;
+//  print_candidates();
+  std::cout<<"\nMapa:\n";
+  for(OrderedItemMap::iterator mapYt = itemListMap.begin(); mapYt != itemListMap.end(); ++mapYt)
+  {
+    std::cout<<mapYt->first<<": ";
+    for(OrderedItemsetSet::iterator setYt = mapYt->second.begin(); setYt != mapYt->second.end(); ++setYt)
+      std::cout<<(*setYt)->get_timestamp()<<" ";
+    std::cout<<std::endl;
+  }
+  std::cout<<std::endl<<std::flush;*/
 
   //for every candidate sequence...
   for(std::set<GspSequence *>::const_iterator candIter = candidates_.begin(); candIter != candidates_.end(); ++candIter)
   {
     GspSequence *candSeq = *candIter;
+//    std::cout<<"CAND: "<<candSeq->ToString();
     //build a vector of objects representing the itemsets for the algorithm
     std::vector<ItemSetIterators *> candItemSets;
     candItemSets.clear();
@@ -211,6 +206,8 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
     for(GspSequence::IterType itemsetIter = candSeq->begin(); itemsetIter != candSeq->end(); ++itemsetIter)
     {
       //an itemset representation
+//      std::cout<<" "<<(*itemsetIter)->ToString();
+//      std::cout<<std::endl;
       ItemSetIterators *candStruct = new ItemSetIterators(&itemListMap, *itemsetIter, windowSize);
       //check if all the items in the candidate are present in the client
       if(!candStruct->init())
@@ -221,8 +218,13 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
         break;
       }
       else
+      {
+//        candStruct->print_content();
+//        std::cout<<std::endl;
         candItemSets.push_back(candStruct);
+      }
     }
+//    std::cout<<std::endl;
     //get number of itemsets
     int maxEl = candItemSets.size();
     //if the representation was correctly created, start matching the items
@@ -231,7 +233,7 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
       //start with the first (earliest) itemset, perform the GSP matching phase
       int current = 0;
       int currentMin = -1;
-      int currentTimeEnd = candItemSets[current]->getMaxTime();
+      int currentTimeEnd, currentTimeStart;
 
       bool OK = true;
       //until last itemset reached
@@ -240,10 +242,12 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
         //move the items in an itemset past the specified minimal timestamp
         if(candItemSets[current]->move(currentMin))
         {
+//          std::cout<<" current: "<<current<<std::endl;
           //if possible, find the next mathing that fits in the sliding window
           if(candItemSets[current]->find())
           {
-            //if possible, determine the next step
+            currentTimeEnd = candItemSets[current]->getMaxTime();
+            currentTimeStart = candItemSets[current]->getMinTime();
             if(current == 0
                 || (maxGap <= 0) || (currentTimeEnd - candItemSets[current - 1]->getMinTime() <= maxGap))
             {
@@ -255,7 +259,7 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
             else
             {
               //the max gap wasn't satisfied, move backwards
-              currentMin = candItemSets[current]->getMinTime() - maxGap;
+              currentMin = currentTimeStart - maxGap;
               --current;
             }
           }
@@ -285,4 +289,87 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
   }
 }
 
+//TODO odkrecic
+bool GspSequence::ContiguousCheck(std::set<std::string> *stringSet)
+{
+  GspSequence::IterType first = begin();
+  GspSequence::IterType invalid = end();
+  GspSequence::IterType last = --end();
+
+  std::stringstream sss;
+
+  for(GspSequence::IterType itemsetIter = first; itemsetIter != invalid; ++itemsetIter)
+  {
+    if(itemsetIter == first  && (*itemsetIter)->item_count() == 1)
+    {
+      sss.clear();
+      sss.str("");
+      GspSequence::IterType temp = first;
+      ++temp;
+      while(temp !=invalid)
+      {
+        sss<<(*temp)->ToString();
+        ++temp;
+      }
+      if(stringSet->find(sss.str()) == stringSet->end())
+        return false
+            ;
+    }
+    else if (itemsetIter == last && (*itemsetIter)->item_count() == 1)
+    {
+      sss.clear();
+      sss.str("");
+      GspSequence::IterType temp = first;
+      while(temp !=last)
+      {
+        sss<<(*temp)->ToString();
+        ++temp;
+      }
+      if(stringSet->find(sss.str()) == stringSet->end())
+        return false
+            ;
+    }
+    else
+    {
+      if((*itemsetIter)->item_count() > 1)
+      {
+        for(GspItemset::IterType exclItemIter = (*itemsetIter)->begin(); exclItemIter != (*itemsetIter)->end(); ++exclItemIter)
+        {
+          sss.clear();
+          sss.str("");
+
+          for(GspSequence::IterType tt = first; tt != itemsetIter; ++tt)
+          {
+            sss<<(*tt)->ToString();
+          }
+
+          sss<<"{ ";
+          for(GspItemset::IterType itt = (*itemsetIter)->begin(); itt != exclItemIter; ++itt)
+          {
+            sss<<*itt<<" ";
+          }
+          GspItemset::IterType itt = exclItemIter;
+          ++itt;
+          for(; itt != (*itemsetIter)->end(); ++itt)
+          {
+            sss<<*itt<<" ";
+          }
+          sss<<"}";
+
+          GspSequence::IterType tt = itemsetIter;
+          ++tt;
+          for(;tt != invalid; ++tt)
+          {
+            sss<<(*tt)->ToString();
+          }
+          if(stringSet->find(sss.str()) == stringSet->end())
+            return false
+                ;
+        }
+      }
+    }
+  }
+
+  return true;
+}
 

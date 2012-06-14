@@ -76,7 +76,16 @@ void GspAlgorithm::RunPass()
   if (finished_)
     return;
 
+  std::cout<<"Joining..."<<std::flush;
   candidates_ = frequent_->Join();
+  std::cout<<candidates_->GetSequenceCount()<<std::endl;
+  std::cout<<"Cont..."<<std::flush;
+  std::set<std::string> *strRep = frequent_->ToStringSet();
+  candidates_->DropNonContiguous(strRep);
+  std::cout<<candidates_->GetSequenceCount()<<std::endl;
+  delete strRep;
+//  candidates_->PrintSequences();
+//  std::cout<<std::flush;
   if (candidates_->GetSequenceCount() == 0)
   {
     finished_ = true;
@@ -87,12 +96,13 @@ void GspAlgorithm::RunPass()
   }
 //  std::cout<<std::endl;
 
+//  candidates_->PrintSequences();
+  std::cout<<"Counting..."<<std::flush;
   candidates_->CountSupport(reader_.get());
-//  std::cout<<std::endl;
-//  candidates_->PrintSequences();
+  std::cout<<candidates_->GetSequenceCount()<<std::endl;
+  std::cout<<"Dropping..."<<std::flush;
   candidates_->DropSequences();
-//  std::cout<<std::endl;
-//  candidates_->PrintSequences();
+  std::cout<<candidates_->GetSequenceCount()<<std::endl<<std::endl<<std::endl;
 
   if (candidates_->GetSequenceCount() == 0)
   {

@@ -62,28 +62,12 @@ bool ParseCommandLineArguments(int argc, char *argv[],
 
 int main(int argc, char *argv[])
 {
-//  std::string data_file_path;
-//  int min_support;
-//  int window_size;
-//  int min_gap;
-//  int max_gap;
+  std::string data_file_path;
+  int min_support;
+  int window_size;
+  int min_gap;
+  int max_gap;
 
-  GspAlgorithm gsp(CreateSampleArrayReader(), 1, 7, 0, 0);
-//  std::cout<<std::endl;
-//  gsp.PrintFrequentSequences();
-//  std::cout<<std::endl;
-
-  while(!gsp.is_finished())
-    gsp.RunPass();
-
-  std::cout<<std::endl<<std::endl<<"Result:"<<std::endl;
-  gsp.PrintResult(std::cout);
-
-  std::cout<<std::endl;
-
-
-
-  /*
   if (ParseCommandLineArguments(argc, argv,
                                 data_file_path,
                                 min_support,
@@ -97,26 +81,46 @@ int main(int argc, char *argv[])
     if (reader != NULL &&
         reader->IsValid())
     {
+      int k = 1;
       GspAlgorithm gsp(reader, min_support, window_size,
                        min_gap, max_gap);
-//
-
+      std::cout<<"Pass "<<k<<std::endl;
+      std::cout<<"Found "<<gsp.get_frequent_count()<<" frequent "<<k<<"-sequences"<<std::endl<<std::endl;
 //      gsp.PrintFrequentSequences();
-      std::cout << "\n\n";
-//      gsp.PrintCandidateSequences();
-      std::cout << "\n\n";
-      gsp.RunPass();
+      std::cout<<std::endl;
+
+      while(!gsp.is_finished())
+      {
+        gsp.RunPass();
+      }
+      std::cout<<"RESULT:"<<std::endl;
+      gsp.PrintResult(std::cout);
     }
     else
     {
       std::cout << "Could not open dataset file: " << data_file_path << std::endl;
     }
   }
-  */
 
   std::cout<<"Exiting!!";
   return 0;
 }
+
+
+//    GspAlgorithm gsp(CreateSampleArrayReader(), 1, 7, 0, 0);
+//    std::cout<<std::endl;
+//    gsp.PrintFrequentSequences();
+//    std::cout<<std::endl;
+//
+//    while(!gsp.is_finished())
+//      gsp.RunPass();
+//
+//    std::cout<<std::endl<<std::endl<<"Result:"<<std::endl;
+//    gsp.PrintResult(std::cout);
+//
+//    std::cout<<std::endl;
+//
+//  return 0;
 
 
 GspArrayReader *CreateSampleArrayReader()

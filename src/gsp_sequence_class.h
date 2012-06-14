@@ -227,6 +227,13 @@ class GspSequence
       }
     }
 
+    bool ContiguousCheck(std::set<std::string> *stringSet);
+
+    int get_itemset_count()
+    {
+      return itemsets_.size();
+    }
+
   private:
     std::list<GspItemset *> itemsets_; /**< List of itemsets */
     std::list<GspItemset *>::const_iterator iter_;
@@ -269,6 +276,8 @@ class GspSequence
       private:
         OrderedItemsetSet *itemList_;
         OrderedItemsetSet::const_iterator iter_;
+        std::string item_;
+        int currentTime_;
       public:
         /**
          * @brief Class used to compare the GspItemIterator objects in a set
@@ -279,7 +288,9 @@ class GspSequence
           public:
             bool operator()(GspItemIterator *a, GspItemIterator *b)
             {
-              return (*(a->iter_))->get_timestamp() < (*(b->iter_))->get_timestamp();
+              if (a->currentTime_ == b->currentTime_)
+                return (a->item_ < b->item_);
+              return (a->currentTime_ < b->currentTime_);
             }
         };
 
@@ -290,9 +301,14 @@ class GspSequence
          * @param[in] itemList A list of sorted timestamps of appearances of the item
          * in the client sequence
          */
-        GspItemIterator(OrderedItemsetSet *itemList)
-          : itemList_(itemList), iter_(itemList_->begin())
+        GspItemIterator(OrderedItemsetSet *itemList, std::string &item)
+          : itemList_(itemList), iter_(itemList_->begin()), item_(item), currentTime_((*iter_)->get_timestamp())
         {
+        }
+
+        const std::string &get_item()
+        {
+          return item_;
         }
 
         /**
@@ -304,21 +320,23 @@ class GspSequence
         }
 
         /**
-         * @brief Returns the currently pointed timestamp
-         */
-        int get_timestamp()
-        {
-          return (*iter_)->get_timestamp();
-        }
-
-        /**
          * @brief Tries to move the pointer to the next appearance of the item
          * in the client sequence.
          */
         bool next()
         {
+          bool ret;
           ++iter_;
-          return is_valid();
+          ret = is_valid();
+          if(ret)
+            currentTime_ = (*iter_)->get_timestamp();
+
+          return ret;
+        }
+
+        int get_time()
+        {
+          return currentTime_;
         }
 
         /**
@@ -329,7 +347,8 @@ class GspSequence
         {
           while(iter_ != itemList_ -> end())
           {
-            if (get_timestamp() > time)
+            currentTime_ = (*iter_)->get_timestamp();
+            if (currentTime_ > time)
               return true;
             ++iter_;
           }
@@ -374,6 +393,12 @@ class GspSequence
           }
         }
 
+        void print_content()
+        {
+          for(IterType it = items_.begin(); it != items_.end(); ++it)
+            std::cout<<"("<<(*it)->get_item()<<"|"<<(*it)->get_time()<<")";
+        }
+
         /**
          * @brief Tries to initialize the item pointer values to their first
          * appearances in a client sequence. It fails if at least one of the items is
@@ -390,8 +415,10 @@ class GspSequence
               return false;
             }
 
-            items_.insert(new GspItemIterator(&(mapIt->second)));
+            items_.insert(new GspItemIterator(&(mapIt->second), item));
           }
+
+//          std::cout<<std::endl;
 
           return true;
         }
@@ -407,8 +434,12 @@ class GspSequence
           {
             IterType first = items_.begin();
             GspItemIterator *firstItem = *first;
-            if(firstItem->get_timestamp() > val)
-              break;;
+            int tStamp = firstItem->get_time();
+            std::string item = firstItem->get_item();
+//            print_content();
+//            std::cout<<" curr:  "<<item<<" "<<tStamp<<" "<<val<<std::endl;
+            if(tStamp > val)
+              break;
             items_.erase(first);
             if(firstItem->move(val))
               items_.insert(firstItem);
@@ -430,10 +461,14 @@ class GspSequence
         {
           while(1)
           {
-            int maxTime = (*(--items_.end()))->get_timestamp();
+            int maxTime = (*(--items_.end()))->get_time();
             IterType first = items_.begin();
             GspItemIterator *firstItem = *(first);
-            if (maxTime - firstItem->get_timestamp() <= windowSize_)
+            int tStamp = firstItem->get_time();
+            std::string item = firstItem->get_item();
+//            print_content();
+//            std::cout<<" curr:  "<<item<<" "<<tStamp<<" "<<std::endl;
+            if (maxTime - tStamp <= windowSize_)
               break;
             items_.erase(first);
             if(firstItem->next())
@@ -453,7 +488,7 @@ class GspSequence
          */
         int getMinTime()
         {
-          return (*items_.begin())->get_timestamp();
+          return (*items_.begin())->get_time();
         }
 
         /**
@@ -461,7 +496,7 @@ class GspSequence
          */
         int getMaxTime()
         {
-          return (*(--items_.end()))->get_timestamp();
+          return (*(--items_.end()))->get_time();
         }
     };
 };

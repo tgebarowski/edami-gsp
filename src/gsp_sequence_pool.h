@@ -98,6 +98,10 @@ class GspSequencePool
      */
     void PrintResult(std::ostream &str);
 
+    std::set<std::string> *ToStringSet();
+
+    void DropNonContiguous(std::set<std::string> *stringSet);
+
   private:
 
     GspAlgorithm *parent_;

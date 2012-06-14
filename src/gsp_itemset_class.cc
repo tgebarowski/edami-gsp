@@ -37,15 +37,39 @@ GspItemset::~GspItemset()
 /* Documented in header */
 std::string GspItemset::ToString() const
 {
-  unsigned size = itemset_.size();
+  std::stringstream strStream;
+  strStream<<"{ ";
+  for(std::set<std::string>::const_iterator it = itemset_.begin(); it != itemset_.end(); ++it)
+  {
+    strStream<<*it<<" ";
+  }
+  strStream<<"}";
+
+  return strStream.str();
+}
+
+std::string GspItemset::ToStringNoBrac()
+{
   std::stringstream strStream;
   for(std::set<std::string>::const_iterator it = itemset_.begin(); it != itemset_.end(); ++it)
   {
-    strStream<<*it;
-    if (size-- > 1)
-      strStream<<",";
+    strStream<<*it<<" ";
   }
+  return strStream.str();
+}
 
+std::string GspItemset::ToStringNoBracNoLast()
+{
+  int siz = itemset_.size();
+  int cur = 0;
+  std::stringstream strStream;
+  for(std::set<std::string>::const_iterator it = itemset_.begin(); it != itemset_.end(); ++it)
+  {
+    if (cur == siz - 1)
+      break;
+    strStream<<*it<<" ";
+    ++cur;
+  }
   return strStream.str();
 }
 

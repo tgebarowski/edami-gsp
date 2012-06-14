@@ -14,8 +14,9 @@
 
 #include <list>
 #include <vector>
+#include <cstring>
 
-#define MAX_NODES 1009 /* Maximum number of Nodes pointed by Internal node */
+#define MAX_NODES 37 /* Maximum number of Nodes pointed by Internal node */
 
 #include "gsp_common.h"
 #include "gsp_sequence_class.h"
@@ -110,8 +111,9 @@ class GspHashTree
             max_sequences_(max_leaf),
             max_level_(max_level)
          {
-           for(int it = 0; it < MAX_NODES; ++it)
-             nodes_[it] = NULL;
+//           for(int it = 0; it < MAX_NODES; ++it)
+//             nodes_[it] = NULL;
+           std::memset(nodes_, 0, MAX_NODES*sizeof(Node *));
          }
 
          /**
@@ -135,7 +137,8 @@ class GspHashTree
              for(int it = 0; it < MAX_NODES; ++it)
              {
                std::cout<<"Child "<<it<<":"<<std::endl;
-               nodes_[it]->PrintNode();
+               if(nodes_[it])
+                 nodes_[it]->PrintNode();
              }
              std::cout << std::endl<<"END Interior node, level: "
                        << level_<<std::endl<<std::endl;
@@ -162,8 +165,9 @@ class GspHashTree
              max_sequences_(max_leaf),
              max_level_(max_level)
          {
-           for(int it = 0; it < MAX_NODES; ++it)
-             nodes_[it] = NULL;
+           //for(int it = 0; it < MAX_NODES; ++it)
+            // nodes_[it] = NULL;
+           std::memset(nodes_, 0, MAX_NODES*sizeof(Node *));
          }
 
          /**
@@ -226,6 +230,10 @@ class GspHashTree
             int hash = Hash(curItem, MAX_NODES);
             //std::cout << " Itemset: "<<curItemSet->ToString()
         //              << " Item: " <<curItem<< " Hash: "<<hash<<std::endl;
+            if(!nodes_[hash])
+            {
+              nodes_[hash] = new Node(level_ + 1, NODE_LEAF, max_sequences_, max_level_);
+            }
             nodes_[hash]->SetSequence(sequence);
           }
         }
@@ -235,57 +243,52 @@ class GspHashTree
          */
         void TransformToInterior()
         {
-          //std::cout << std::endl
-    //                <<  "Transforming from leaf to interior at level: "
-     //               << level_ << std::endl;
           if (type_ == NODE_LEAF)
           {
             type_ =  NODE_INTERIOR;
 
-            for(int it = 0; it < MAX_NODES; ++it)
-            {
-              nodes_[it] = new Node(level_ + 1, NODE_LEAF, max_sequences_, max_level_);
-            }
+//            for(int it = 0; it < MAX_NODES; ++it)
+//            {
+//              nodes_[it] = new Node(level_ + 1, NODE_LEAF, max_sequences_, max_level_);
+//            }
 
             for (std::list<GspSequence *>::iterator it = sequences_.begin();
                  it != sequences_.end();
                  ++it)
             {
               GspItemset *curItemSet = (*it)->current_itemset();
-              //std::cout<<(*it)->ToString();
-              //std::cout<<" A"<<std::flush;
               std::string curItem = curItemSet->current_item();
-              //std::cout<<" B"<<std::flush;
               if(!curItemSet->next_item())
               {
-                //std::cout<<" C"<<std::flush;
                 (*it)->next_itemset();
               }
-              //std::cout<<" D"<<std::endl;
-
               int hash = Hash(curItem, MAX_NODES);
-              //std::cout << "Interior - Level: " << level_
-          //              <<" Sequence: "<<(*it)->ToString()
-           //             <<" Itemset: "<<curItemSet->ToString()
-            //            <<" Item: "<<curItem<< " Hash: "<<hash<<std::endl;
+
+              if(!nodes_[hash])
+              {
+                nodes_[hash] = new Node(level_ + 1, NODE_LEAF, max_sequences_, max_level_);
+              }
               nodes_[hash]->SetSequence((*it));
             }
             sequences_.clear();
           }
-          //std::cout << "Transforming done for level "<< std::endl<<std::endl;
         }
 
         /**
          * @brief Clear the history of visits before the new sequence
          */
         void clear_history()
+        //TODO uncomment
         {
+
           if (type_ ==  NODE_INTERIOR)
           {
             for(int it = 0; it < MAX_NODES; ++it)
-              nodes_[it]->clear_history();
+              if(nodes_[it])
+                nodes_[it]->clear_history();
           }
           visitedSet.clear();
+
         }
 
       private:
@@ -299,7 +302,7 @@ class GspHashTree
 
         /* Interior node only */
         Node *nodes_[MAX_NODES]; /**< Nodes belonging to Node */
-        std::set<std::pair<std::string, int> > visitedSet; //history of items that visited the node
+        std::set<std::pair<int, std::string> > visitedSet; //history of items that visited the node
     };
 
     Node * root_; /**< HashTree root */

@@ -17,6 +17,7 @@
 #include "gsp_sequence_reader.h"
 #include "gsp_hashtree_class.h"
 #include "gsp_algorithm.h"
+#include "gsp_join_tree.h"
 
 /* Documented in header */
 GspSequencePool::GspSequencePool(GspAlgorithm *parent)
@@ -36,8 +37,10 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader,
   std::set<std::string> cand1Sequence;
 
   //create 1-length candidates,
+//  std::cout<<"CANDIDATES:"<<std::endl;
   while((seq = reader->GetNextSequence()))
   {
+//    std::cout<<seq->ToString()<<std::endl;
     cand1Sequence.clear();
     seq->rewind();
     GspItemset *itemset = seq->current_itemset();
@@ -148,6 +151,39 @@ GspSequencePool *GspSequencePool::Join()
   }
   else
   {
+    GspJoinTree *joinTree = new GspJoinTree();
+
+    for (std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end(); ++it)
+    {
+      joinTree->AddSequence(*it);
+    }
+
+    std::list<GspSequence *> *res;
+    for (std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end(); ++it)
+    {
+      res = NULL;
+      GspSequence *copy = new GspSequence(**it);
+      copy->DropFirstItem();
+//      std::cout<<"Checking: "<<(*it)->ToString()<<" | "<<copy->ToString()<<std::endl;
+      joinTree->FindJoinable(copy, res);
+      if (res && res->size() > 0)
+      {
+//        std::cout<<"SEQ: "<<(*it)->ToString()<<std::endl;
+        for(std::list<GspSequence *>::iterator jt = res->begin(); jt != res->end(); ++jt)
+        {
+          GspSequence *toAdd = new GspSequence(**it);
+          toAdd->AppendSequence(*jt);
+          ret->sequences_.push_back(toAdd);
+//          std::cout<<(*jt)->ToString()<<std::endl;
+        }
+      }
+
+      delete copy;
+    }
+
+    delete joinTree;
+
+    /*
     GspSequence *candidate;
     for(std::list<GspSequence *>::const_iterator it = sequences_.begin();
         it != sequences_.end();
@@ -159,9 +195,12 @@ GspSequencePool *GspSequencePool::Join()
       {
         candidate = (*it)->JoinSequences(*jt);
         if (candidate)
+        {
           ret->sequences_.push_back(candidate);
+        }
       }
     }
+    */
   }
 
   return ret;
@@ -191,7 +230,7 @@ void GspSequencePool::PrintResult(std::ostream &str)
 /* Documented in header */
 void GspSequencePool::CountSupport(GspSequenceReader *reader)
 {
-  GspHashTree tree(k_, 4);
+  GspHashTree tree(k_, 15);
 
   for (std::list<GspSequence *>::const_iterator it = sequences_.begin();
        it != sequences_.end();
@@ -199,16 +238,13 @@ void GspSequencePool::CountSupport(GspSequenceReader *reader)
   {
     tree.AddSequence(*it);
   }
- // std::cout<<std::endl;
 
   GspSequence *seqTemp;
 
-//  tree.PrintTree();
-
-  //TODO sprawdzac returna
   reader->RewindStream();
   while((seqTemp = reader->GetNextSequence()))
   {
+//    std::cout<<seqTemp->ToString();
     tree.CheckClientSequence(seqTemp,
                              parent_);
 
@@ -227,7 +263,10 @@ void GspSequencePool::DropSequences()
   {
     std::list<GspSequence *>::iterator prevIt = it++;
     if ((*prevIt)->get_support() <= parent_->min_support())
+    {
+      delete *prevIt;
       sequences_.erase(prevIt);
+    }
   }
 }
 
@@ -239,6 +278,34 @@ GspSequencePool::~GspSequencePool()
       )
   {
     delete *it;
+  }
+}
+
+std::set<std::string> *GspSequencePool::ToStringSet()
+{
+  std::set<std::string> *ret = new std::set<std::string>();
+
+  for(std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end(); ++it)
+  {
+    ret->insert((*it)->ToString());
+  }
+
+  return ret;
+}
+
+void GspSequencePool::DropNonContiguous(std::set<std::string> *stringSet)
+{
+  for(std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end();)
+  {
+    if((!(*it)->ContiguousCheck(stringSet)))
+    {
+      delete *it;
+      sequences_.erase(it++);
+    }
+    else
+    {
+      ++it;
+    }
   }
 }
 

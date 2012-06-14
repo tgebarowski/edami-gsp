@@ -80,6 +80,7 @@ class GspFileReader : public GspSequenceReader
     virtual bool IsValid();
 
   private:
+    std::string path_;
     ifstream input_file_; /**< Object representing opened file */
     istream_iterator<string> begin_iterator_; /**< Current line iterator */
     istream_iterator<string> line_iterator_; /**< Current line iterator */
