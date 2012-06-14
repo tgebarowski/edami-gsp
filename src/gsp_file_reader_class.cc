@@ -19,7 +19,7 @@ GspFileReader::GspFileReader(string file_path)
   : path_(file_path), input_file_(path_.c_str())
 {
   begin_iterator_ = input_file_;
-  line_iterator_ = input_file_;
+  line_iterator_ = begin_iterator_;
 }
 
 /* Documented in header */
@@ -34,7 +34,7 @@ bool GspFileReader::RewindStream()
   input_file_.seekg(0, ios::beg);
 
   begin_iterator_ = input_file_;
-  line_iterator_ = input_file_;
+  line_iterator_ = begin_iterator_;
 
   return IsValid();
 }
