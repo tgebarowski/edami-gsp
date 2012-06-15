@@ -33,7 +33,7 @@ GspAlgorithm::GspAlgorithm(GspSequenceReader *in_reader,
   std::cout << "GSP (min-support: " << ToString(min_support_)\
             << " window-size: " << ToString(window_size_)\
             << " min-gap: " << ToString(min_gap_)\
-            << " max-gap: " << ToString(max_gap_) << std::endl;
+            << " max-gap: " << ToString(max_gap_) <<")"<< std::endl;
 
   frequent_ = new GspSequencePool(reader_.get(),
                                   this);
@@ -75,17 +75,15 @@ void GspAlgorithm::RunPass()
 {
   if (finished_)
     return;
-
-  std::cout<<"Joining..."<<std::flush;
+  std::cout<<"Looking for "<<frequent_->GetK() + 1<<"-frequent sequences..."<<std::endl;
+  std::cout<<"Joining the "<<frequent_->GetK()<<"-frequent set... "<<std::flush;
   candidates_ = frequent_->Join();
-  std::cout<<candidates_->GetSequenceCount()<<std::endl;
-  std::cout<<"Cont..."<<std::flush;
+  std::cout<<candidates_->GetSequenceCount()<<" "<<candidates_->GetK()<<"-candidates found!"<<std::endl;
+  std::cout<<"Removing candidates with nonfrequent contiguous subsequences... "<<std::flush;
   std::set<std::string> *strRep = frequent_->ToStringSet();
   candidates_->DropNonContiguous(strRep);
-  std::cout<<candidates_->GetSequenceCount()<<std::endl;
+  std::cout<<candidates_->GetSequenceCount()<<" candidates left!"<<std::endl;
   delete strRep;
-//  candidates_->PrintSequences();
-//  std::cout<<std::flush;
   if (candidates_->GetSequenceCount() == 0)
   {
     finished_ = true;
@@ -94,15 +92,12 @@ void GspAlgorithm::RunPass()
 
     return;
   }
-//  std::cout<<std::endl;
-
-//  candidates_->PrintSequences();
-  std::cout<<"Counting..."<<std::flush;
+  std::cout<<"Counting support for candidates... "<<std::flush;
   candidates_->CountSupport(reader_.get());
-  std::cout<<candidates_->GetSequenceCount()<<std::endl;
-  std::cout<<"Dropping..."<<std::flush;
+  std::cout<<"Done!"<<std::endl;
+  std::cout<<"Dropping nonfrequent candidates... "<<std::flush;
   candidates_->DropSequences();
-  std::cout<<candidates_->GetSequenceCount()<<std::endl<<std::endl<<std::endl;
+  std::cout<<candidates_->GetSequenceCount()<<" frequent "<<candidates_->GetK()<<"-sequenced found!"<<std::endl<<std::endl;
 
   if (candidates_->GetSequenceCount() == 0)
   {

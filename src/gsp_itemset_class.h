@@ -59,8 +59,14 @@ class GspItemset
      */
     std::string ToString() const;
 
+    /**
+     * @brief Get string representation of itemset without brackets
+     */
     std::string ToStringNoBrac();
 
+    /**
+      * @brief Get string representation of itemset without brackets and last item
+      */
     std::string ToStringNoBracNoLast();
 
     /**

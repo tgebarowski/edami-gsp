@@ -18,8 +18,6 @@
 /* Documented in header */
 enum GSP_STATUS GspHashTree::AddSequence(GspSequence *sequence)
 {
-//  std::cout << "Add To Tree: " + sequence->ToString() << std::endl;
-
   sequence->rewind_all();
   root_->SetSequence(sequence);
 

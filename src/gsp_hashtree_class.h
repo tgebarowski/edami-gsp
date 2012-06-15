@@ -205,8 +205,6 @@ class GspHashTree
           //if leaf
           if (type_ == NODE_LEAF)
           {
-            //std::cout << "Leaf - Level: " << level_
-   //                   << " Sequence: "<<sequence->ToString()<<std::endl;
             //add sequence
             sequences_.push_back(sequence);
             if (sequences_.size() > max_sequences_ &&
@@ -220,16 +218,13 @@ class GspHashTree
           {
             //if interior node, check whick child node to follow
 
-            //std::cout << "Interior - Level: " << level_
-    //                  << " Sequence: "<<sequence->ToString();
             GspItemset *curItemSet = sequence->current_itemset();
             std::string curItem = curItemSet->current_item();
             if(!curItemSet->next_item())
               sequence->next_itemset();
 
             int hash = Hash(curItem, MAX_NODES);
-            //std::cout << " Itemset: "<<curItemSet->ToString()
-        //              << " Item: " <<curItem<< " Hash: "<<hash<<std::endl;
+
             if(!nodes_[hash])
             {
               nodes_[hash] = new Node(level_ + 1, NODE_LEAF, max_sequences_, max_level_);
@@ -278,7 +273,6 @@ class GspHashTree
          * @brief Clear the history of visits before the new sequence
          */
         void clear_history()
-        //TODO uncomment
         {
 
           if (type_ ==  NODE_INTERIOR)

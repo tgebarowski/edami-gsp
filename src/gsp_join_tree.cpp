@@ -1,10 +1,3 @@
-/*
- * gsp_join_tree.cpp
- *
- *  Created on: Jun 14, 2012
- *      Author: adas
- */
-
 #include "gsp_join_tree.h"
 
 GspJoinTree::GspJoinTree() : root_(new Node())
@@ -19,7 +12,6 @@ GspJoinTree::~GspJoinTree()
 
 void GspJoinTree::AddSequence(GspSequence * seq)
 {
-//  std::cout<<"Adding: "<<seq->ToString()<<std::endl;
   root_->AddSequence(seq, seq->begin());
 }
 
