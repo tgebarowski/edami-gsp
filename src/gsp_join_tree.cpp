@@ -1,4 +1,5 @@
 #include "gsp_join_tree.h"
+#include <cstdlib>
 
 GspJoinTree::GspJoinTree() : root_(new Node())
 {
@@ -12,88 +13,125 @@ GspJoinTree::~GspJoinTree()
 
 void GspJoinTree::AddSequence(GspSequence * seq)
 {
-  root_->AddSequence(seq, seq->begin());
+  GspSequence::IterType iter = seq->begin();
+  root_->AddSequence(seq, iter);
 }
 
-void GspJoinTree::FindJoinable(GspSequence *seq, std::list<GspSequence *> *&result)
+void GspJoinTree::FindJoinable(GspSequence *seq, std::list<GspSequence *> &result)
 {
   GspSequence::IterType current = seq->begin();
   GspSequence::IterType final = seq->end();
+//  std::cout<<"Finding joinables! "<<seq->ToString()<<std::endl;
   root_->FindJoinable(current, final, result);
 }
 
-void GspJoinTree::Node::FindJoinable(GspSequence::IterType &current, GspSequence::IterType &final, std::list<GspSequence *> *&result)
+bool GspJoinTree::FindSequence(GspSequence *seq)
+{
+  GspSequence::IterType iter = seq->begin();
+  return root_->FindSequence(seq, iter);
+}
+
+void GspJoinTree::Node::FindJoinable(GspSequence::IterType current, GspSequence::IterType &final, std::list<GspSequence *> &result)
 {
   if(current == final)
   {
-    if(sequences_)
+    if(seq_)
     {
-      result = sequences_;
+//      std::cout<<"Found! "<<seq_->ToString()<<std::endl;
+      result.push_back(seq_);
     }
     return;
   }
 
-  std::string hash = (*current)->ToStringNoBrac();
-  if(nodes_)
+  GspSequence::IterType tempIter = current;
+  ++tempIter;
+
+  //last element of the sequence being checked, now find joinables
+  if(tempIter == final)
   {
-    if(nodes_->find(hash) != nodes_->end())
-      (*nodes_)[hash]->FindJoinable(++current, final, result);
+    if(nodes_)
+    {
+      //find exact match to add sequences with single-item transactions at the end
+      std::map<GspItemset *, Node *, GspItemSetrPtrComparer>::iterator it = nodes_->find(*current);
+      if(it != nodes_->end())
+      {
+        it->second->Add1AtEnd(result);
+      }
+
+      for(std::map<GspItemset *, Node *, GspItemSetrPtrComparer>::iterator it = nodes_->begin(); it != nodes_->end(); ++it)
+      {
+        if((*current)->CompareNoLast(*(it->first)))
+          it->second->FindJoinable(tempIter, final, result);
+      }
+    }
+  }
+  else
+  {
+    if(nodes_)
+    {
+      std::map<GspItemset *, Node *, GspItemSetrPtrComparer>::iterator it = nodes_->find(*current);
+      if(it != nodes_->end())
+      {
+        it->second->FindJoinable(tempIter, final, result);
+      }
+    }
   }
 }
 
-void  GspJoinTree::Node::AddSequence(GspSequence *seq, GspSequence::IterType iter)
+void GspJoinTree::Node::Add1AtEnd(std::list<GspSequence *> &result)
+{
+  if(nodes_)
+  {
+    for(std::map<GspItemset *, Node *, GspItemSetrPtrComparer>::iterator it = nodes_->begin(); it != nodes_->end(); ++it)
+    {
+      if(it->first->item_count() == 1)
+      {
+        if(it->second->seq_)
+          result.push_back(it->second->seq_);
+      }
+    }
+  }
+}
+
+bool GspJoinTree::Node::FindSequence(GspSequence *seq, GspSequence::IterType &iter)
+{
+  if(iter == seq->end())
+  {
+    if (seq_)
+      return true;
+    return false;
+  }
+
+  std::map<GspItemset *, Node *, GspItemSetrPtrComparer>::iterator mapIter = nodes_->find(*iter);
+  if(mapIter == nodes_->end())
+    return false;
+  Node *nextNode = mapIter->second;
+  return nextNode->FindSequence(seq, ++iter);
+}
+
+void  GspJoinTree::Node::AddSequence(GspSequence *seq, GspSequence::IterType &iter)
 {
   //if previous last
   if(iter == seq->end())
   {
-    if(!sequences_)
-    {
-      sequences_ = new std::list<GspSequence *>();
-    }
-    sequences_->push_back(seq);
+    seq_ = seq;
     return;
   }
+
 
   GspItemset *itemset = *iter;
   ++iter;
-  //if current last
-  if(iter == seq->end())
-  {
-    //single item in last itemset, need to drop it, so we insert here
-    if(itemset->item_count() == 1)
-    {
-      if(!sequences_)
-      {
-        sequences_ = new std::list<GspSequence *>();
-      }
-      sequences_->push_back(seq);
-    }
-    else
-    {
-      //need to insert in next, but hashing with dropping the last item
-      std::string hash = itemset->ToStringNoBracNoLast();
-      if(!nodes_)
-      {
-        nodes_ = new std::map<std::string, Node *>();
-      }
-      if(nodes_->find(hash) == nodes_->end())
-      {
-        (*nodes_)[hash] = new Node();
-      }
-      (*nodes_)[hash]->AddSequence(seq, iter);
-    }
-    return;
-  }
 
-  std::string hash = itemset->ToStringNoBrac();
   if(!nodes_)
   {
-    nodes_ = new std::map<std::string, Node *>();
+    nodes_ = new std::map<GspItemset *, Node *, GspItemSetrPtrComparer>();
   }
-  if(nodes_->find(hash) == nodes_->end())
+  std::map<GspItemset *, Node *, GspItemSetrPtrComparer>::iterator itt = nodes_->find(itemset);
+  if(itt == nodes_->end())
   {
-    (*nodes_)[hash] = new Node();
+    (*nodes_)[itemset] = new Node();
   }
-  (*nodes_)[hash]->AddSequence(seq, iter);
+
+  (*nodes_)[itemset]->AddSequence(seq, iter);
 }
 

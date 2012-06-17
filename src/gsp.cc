@@ -98,17 +98,25 @@ int main(int argc, char *argv[])
         reader->IsValid())
     {
       GspAlgorithm gsp(reader, min_support, window_size,
-                       min_gap, max_gap);
+                       min_gap, max_gap, &myfile);
       std::cout<<"Looking for 1-frequent sequences... "<<std::endl;
       std::cout<<gsp.get_frequent_count()<<" frequent 1-sequences found!"<<std::endl<<std::endl;
+      gsp.PrintResult();
 
-      while(!gsp.is_finished())
+      if(!gsp.is_finished())
       {
-        gsp.RunPass();
+        while(1)
+        {
+          gsp.RunPass();
+          if(gsp.is_finished())
+          {
+            break;
+          }
+        }
       }
 
       std::cout<<std::endl<<"Writing output... ";
-      gsp.PrintResult(myfile);
+      myfile.flush();
       std::cout<<"Done! "<<std::endl;
     }
     else
@@ -118,9 +126,11 @@ int main(int argc, char *argv[])
   }
 
   int endClk = std::clock();
+  float runTime = ((float)(endClk - startClk))/CLOCKS_PER_SEC;
 
-  std::cout<<(((float)(endClk) - startClk)/CLOCKS_PER_SEC )<<" seconds elapsed"<<std::endl;
+  std::cout<<runTime<<" seconds elapsed"<<std::endl;
   std::cout<<"Exiting..."<<std::endl;
+
   return 0;
 }
 
@@ -128,29 +138,29 @@ GspArrayReader *CreateSampleArrayReader()
 {
   std::vector<GspSequence *> sequences;
 
-  GspSequence *seq = new GspSequence("C1");
+  GspSequence *seq = new GspSequence(-1);
   GspItemset *itSet = new GspItemset(1);
-  itSet->add_item("Ringworld");
+  itSet->add_item(1);
   seq->add_itemset(itSet);
   itSet = new GspItemset(2);
-  itSet->add_item("Foundation");
+  itSet->add_item(2);
   seq->add_itemset(itSet);
   itSet = new GspItemset(15);
-  itSet->add_item("Ringworld Engineers");
-  itSet->add_item("Second Foundation");
+  itSet->add_item(3);
+  itSet->add_item(4);
   seq->add_itemset(itSet);
   sequences.push_back(seq);
 
-  seq = new GspSequence("C2");
+  seq = new GspSequence(-1);
   itSet = new GspItemset(1);
-  itSet->add_item("Foundation");
-  itSet->add_item("Ringworld");
+  itSet->add_item(2);
+  itSet->add_item(1);
   seq->add_itemset(itSet);
   itSet = new GspItemset(20);
-  itSet->add_item("Foundation and Empire");
+  itSet->add_item(5);
   seq->add_itemset(itSet);
   itSet = new GspItemset(50);
-  itSet->add_item("Ringworld Engineers");
+  itSet->add_item(3);
   seq->add_itemset(itSet);
   sequences.push_back(seq);
 

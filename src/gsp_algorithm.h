@@ -30,7 +30,8 @@ class GspAlgorithm
                  unsigned int min_support,
                  int window_size,
                  int min_gap,
-                 int max_gap);
+                 int max_gap,
+                 std::ostream *str);
 
     /**
      * @brief Destroy the object
@@ -40,7 +41,7 @@ class GspAlgorithm
     /**
      * @brief Print the current frequent set into the specified stream
      */
-    void PrintResult(std::ostream &str);
+    void PrintResult();
 
     /**
      * @brief Get number of Frequent Sequences
@@ -123,6 +124,8 @@ class GspAlgorithm
     GspSequencePool *candidates_; /**< Pool with candidate sequences */
  
     bool finished_; /**< Has algorith finished */
+
+    std::ostream *str_;
 };
 
 #endif /* GSP_ALGORITHM_H_ */

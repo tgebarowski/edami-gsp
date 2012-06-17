@@ -19,6 +19,8 @@
 
 #include "gsp_itemset_class.h"
 
+class GspJoinTree;
+
 /**
  * @class GspSequence
  *
@@ -37,7 +39,7 @@ class GspSequence
     /**
      * @brief Constructs Sequence object
      */
-    GspSequence(const std::string &id_);
+    GspSequence(int id_);
 
     /**
      * @brief Copy constructor
@@ -167,7 +169,7 @@ class GspSequence
     /**
      * @brief Returns the sequence identifier
      */
-    std::string get_id()
+    int get_id()
     {
       return id_;
     }
@@ -227,7 +229,7 @@ class GspSequence
       }
     }
 
-    bool ContiguousCheck(std::set<std::string> *stringSet);
+    bool ContiguousCheck(GspJoinTree *joinTree);
 
     int get_itemset_count()
     {
@@ -237,14 +239,14 @@ class GspSequence
   private:
     std::list<GspItemset *> itemsets_; /**< List of itemsets */
     std::list<GspItemset *>::const_iterator iter_;
-    std::string id_;
+    int id_;
     unsigned support_;
     std::set<GspSequence *> candidates_;
 
     /**
      * @brief Comparator class for two itemsets. Orders them by their timestamp
      */
-    class GspItemsetComparer
+    class GspItemsetTimeComparer
     {
       public:
         bool operator()(GspItemset *a, GspItemset *b)
@@ -257,14 +259,14 @@ class GspSequence
      * @brief Type representing a sorted list of itemsets ordered by their
      * timestamps. It is used to determine appearances of items in a sequence
      */
-    typedef std::set<GspItemset *, GspItemsetComparer> OrderedItemsetSet;
+    typedef std::set<GspItemset *, GspItemsetTimeComparer> OrderedItemsetSet;
 
     /**
      * @brief Type used to build a representation of a sequence containing items
      * as keys and an orderel list of timestamps at which those items appear
      * in the sequence
      */
-    typedef std::map<std::string, OrderedItemsetSet> OrderedItemMap;
+    typedef std::map<int, OrderedItemsetSet> OrderedItemMap;
 
     /**
      * @brief Class representing an item in a client sequence during the process
@@ -276,7 +278,7 @@ class GspSequence
       private:
         OrderedItemsetSet *itemList_;
         OrderedItemsetSet::const_iterator iter_;
-        std::string item_;
+        int item_;
         int currentTime_;
       public:
         /**
@@ -301,12 +303,12 @@ class GspSequence
          * @param[in] itemList A list of sorted timestamps of appearances of the item
          * in the client sequence
          */
-        GspItemIterator(OrderedItemsetSet *itemList, std::string &item)
+        GspItemIterator(OrderedItemsetSet *itemList, int item)
           : itemList_(itemList), iter_(itemList_->begin()), item_(item), currentTime_((*iter_)->get_timestamp())
         {
         }
 
-        const std::string &get_item()
+        int get_item()
         {
           return item_;
         }
@@ -408,7 +410,7 @@ class GspSequence
         {
           for(GspItemset::IterType it = itemSet_->begin(); it != itemSet_->end(); ++it)
           {
-            std::string item = *it;
+            int item = *it;
             OrderedItemMap::iterator mapIt = itemMap_->find(item);
             if(mapIt == itemMap_->end())
             {
@@ -435,7 +437,7 @@ class GspSequence
             IterType first = items_.begin();
             GspItemIterator *firstItem = *first;
             int tStamp = firstItem->get_time();
-            std::string item = firstItem->get_item();
+//            std::string item = firstItem->get_item();
 //            print_content();
 //            std::cout<<" curr:  "<<item<<" "<<tStamp<<" "<<val<<std::endl;
             if(tStamp > val)
@@ -465,7 +467,7 @@ class GspSequence
             IterType first = items_.begin();
             GspItemIterator *firstItem = *(first);
             int tStamp = firstItem->get_time();
-            std::string item = firstItem->get_item();
+//            std::string item = firstItem->get_item();
 //            print_content();
 //            std::cout<<" curr:  "<<item<<" "<<tStamp<<" "<<std::endl;
             if (maxTime - tStamp <= windowSize_)

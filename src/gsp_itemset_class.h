@@ -32,7 +32,7 @@ class GspItemset
      *
      * @brief typedef for the iterator type used for iteration over items
      */
-    typedef std::set<std::string>::iterator IterType;
+    typedef std::set<int >::iterator IterType;
 
     /**
      * @brief Constructs Itemset object
@@ -60,21 +60,11 @@ class GspItemset
     std::string ToString() const;
 
     /**
-     * @brief Get string representation of itemset without brackets
-     */
-    std::string ToStringNoBrac();
-
-    /**
-      * @brief Get string representation of itemset without brackets and last item
-      */
-    std::string ToStringNoBracNoLast();
-
-    /**
      * @brief Add item by appending it to the end of itemset
      *
      * @param[in] item String representing appended item
      */
-    inline void add_item(std::string item)
+    inline void add_item(int item)
     {
       itemset_.insert(item);
     }
@@ -139,10 +129,10 @@ class GspItemset
      *
      * @return Element pointed by internal iterator
      */
-    std::string current_item()
+    int current_item()
     {
       if (iter_ == itemset_.end())
-        return "";
+        return -1;
 
       return *iter_;
     }
@@ -176,10 +166,19 @@ class GspItemset
      */
     bool operator==(const GspItemset &right) const;
 
+    bool operator<(const GspItemset &right) const;
+
+    bool CompareNoLast(GspItemset &right);
+
+    void drop_item(int item)
+    {
+      itemset_.erase(item);
+    }
+
   private:
     int timestamp_; /**< Timestamp */
-    std::set<std::string> itemset_;
-    std::set<std::string>::const_iterator iter_;
+    std::set<int> itemset_;
+    std::set<int>::const_iterator iter_;
 };
 
 

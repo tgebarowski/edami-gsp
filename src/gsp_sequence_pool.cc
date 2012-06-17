@@ -22,7 +22,8 @@
 /* Documented in header */
 GspSequencePool::GspSequencePool(GspAlgorithm *parent)
   : parent_(parent),
-    k_(0)
+    k_(0),
+    joinTree_(NULL)
 {
 }
 
@@ -30,14 +31,14 @@ GspSequencePool::GspSequencePool(GspAlgorithm *parent)
 GspSequencePool::GspSequencePool(GspSequenceReader *reader,
                                  GspAlgorithm *parent)
   : parent_(parent),
-    k_(1)
+    k_(1),
+    joinTree_(NULL)
 {
   GspSequence *seq;
-  std::map<std::string, unsigned> cand1;
-  std::set<std::string> cand1Sequence;
+  std::map<int, unsigned> cand1;
+  std::set<int> cand1Sequence;
 
   //create 1-length candidates,
-//  std::cout<<"CANDIDATES:"<<std::endl;
   while((seq = reader->GetNextSequence()))
   {
 //    std::cout<<seq->ToString()<<std::endl;
@@ -51,10 +52,10 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader,
       itemset = seq->current_itemset();
     }
 
-    for (std::set<std::string>::const_iterator seqIt = cand1Sequence.begin();
+    for (std::set<int>::const_iterator seqIt = cand1Sequence.begin();
          seqIt!= cand1Sequence.end(); ++seqIt)
     {
-      std::map<std::string, unsigned>::iterator mapIter = cand1.find(*seqIt);
+      std::map<int, unsigned>::iterator mapIter = cand1.find(*seqIt);
       if(mapIter != cand1.end())
         ++(mapIter->second);
       else
@@ -64,12 +65,12 @@ GspSequencePool::GspSequencePool(GspSequenceReader *reader,
     delete seq;
   }
 
-  for(std::map<std::string, unsigned>::iterator mapIter = cand1.begin();
+  for(std::map<int, unsigned>::iterator mapIter = cand1.begin();
       mapIter != cand1.end(); ++mapIter)
   {
     if (mapIter->second > parent_->min_support())
     {
-      seq = new GspSequence("");
+      seq = new GspSequence(-1);
       GspItemset *itemset = new GspItemset();
       itemset->add_item(mapIter->first);
       seq->add_itemset(itemset);
@@ -100,8 +101,8 @@ GspSequencePool *GspSequencePool::Join()
       tempSeqL->rewind();
       tempItemsetL = tempSeqL->current_itemset();
       tempItemsetL->rewind();
-      std::string itemLeft = tempItemsetL->current_item();
-      newSeq = new GspSequence("");
+      int itemLeft = tempItemsetL->current_item();
+      newSeq = new GspSequence(-1);
       newItemset = new GspItemset(0);
       newItemset->add_item(itemLeft);
       newSeq->add_itemset(newItemset);
@@ -116,9 +117,9 @@ GspSequencePool *GspSequencePool::Join()
         tempSeqR->rewind();
         tempItemsetR = tempSeqR->current_itemset();
         tempItemsetR->rewind();
-        std::string itemRight = tempItemsetR->current_item();
+        int itemRight = tempItemsetR->current_item();
         //(L)(R)
-        newSeq = new GspSequence("");
+        newSeq = new GspSequence(-1);
         newItemset = new GspItemset(0);
         newItemset->add_item(itemLeft);
         newSeq->add_itemset(newItemset);
@@ -128,7 +129,7 @@ GspSequencePool *GspSequencePool::Join()
         ret->sequences_.push_back(newSeq);
 
         //(R)(L)
-        newSeq = new GspSequence("");
+        newSeq = new GspSequence(-1);
         newItemset = new GspItemset(0);
         newItemset->add_item(itemRight);
         newSeq->add_itemset(newItemset);
@@ -138,7 +139,7 @@ GspSequencePool *GspSequencePool::Join()
         ret->sequences_.push_back(newSeq);
 
         //(LR) ordered
-        newSeq = new GspSequence("");
+        newSeq = new GspSequence(-1);
         newItemset = new GspItemset(0);
         newItemset->add_item(itemRight);
         newItemset->add_item(itemLeft);
@@ -146,61 +147,43 @@ GspSequencePool *GspSequencePool::Join()
         ret->sequences_.push_back(newSeq);
       }
       it = ++jt;
-      jt = it++;
+	  if(it != sequences_.end())
+		jt = it++;
     }
   }
   else
   {
-    GspJoinTree *joinTree = new GspJoinTree();
+    joinTree_ = new GspJoinTree();
 
     for (std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end(); ++it)
     {
-      joinTree->AddSequence(*it);
+      joinTree_->AddSequence(*it);
     }
 
-    std::list<GspSequence *> *res;
+    std::list<GspSequence *> res;
     for (std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end(); ++it)
     {
-      res = NULL;
+      res.clear();
       GspSequence *copy = new GspSequence(**it);
       copy->DropFirstItem();
 //      std::cout<<"Checking: "<<(*it)->ToString()<<" | "<<copy->ToString()<<std::endl;
-      joinTree->FindJoinable(copy, res);
-      if (res && res->size() > 0)
+      joinTree_->FindJoinable(copy, res);
+      if (res.size() > 0)
       {
-//        std::cout<<"SEQ: "<<(*it)->ToString()<<std::endl;
-        for(std::list<GspSequence *>::iterator jt = res->begin(); jt != res->end(); ++jt)
+//        std::cout<<"FOUND!! "<<(*it)->ToString()<<std::endl;
+        for(std::list<GspSequence *>::iterator jt = res.begin(); jt != res.end(); ++jt)
         {
+//          std::cout<<(*jt)->ToString()<<std::endl;
           GspSequence *toAdd = new GspSequence(**it);
           toAdd->AppendSequence(*jt);
           ret->sequences_.push_back(toAdd);
-//          std::cout<<(*jt)->ToString()<<std::endl;
+
         }
       }
 
       delete copy;
     }
 
-    delete joinTree;
-
-    /*
-    GspSequence *candidate;
-    for(std::list<GspSequence *>::const_iterator it = sequences_.begin();
-        it != sequences_.end();
-        ++it)
-    {
-      for(std::list<GspSequence *>::const_iterator jt = sequences_.begin();
-          jt != sequences_.end();
-          ++jt)
-      {
-        candidate = (*it)->JoinSequences(*jt);
-        if (candidate)
-        {
-          ret->sequences_.push_back(candidate);
-        }
-      }
-    }
-    */
   }
 
   return ret;
@@ -223,7 +206,7 @@ void GspSequencePool::PrintResult(std::ostream &str)
       it != sequences_.end();
       ++it)
   {
-    str<<((*it)->ToString())<<"\n";
+    str<<((*it)->ToString())<<" support: "<<(*it)->get_support()<<"\n";
   }
 }
 
@@ -261,6 +244,7 @@ void GspSequencePool::DropSequences()
 {
   for(std::list<GspSequence *>::iterator it = sequences_.begin(); it !=  sequences_.end();)
   {
+    (*it)->ToString();
     std::list<GspSequence *>::iterator prevIt = it++;
     if ((*prevIt)->get_support() <= parent_->min_support())
     {
@@ -279,8 +263,11 @@ GspSequencePool::~GspSequencePool()
   {
     delete *it;
   }
+
+  delete joinTree_;
 }
 
+/*
 std::set<std::string> *GspSequencePool::ToStringSet()
 {
   std::set<std::string> *ret = new std::set<std::string>();
@@ -292,12 +279,13 @@ std::set<std::string> *GspSequencePool::ToStringSet()
 
   return ret;
 }
+*/
 
-void GspSequencePool::DropNonContiguous(std::set<std::string> *stringSet)
+void GspSequencePool::DropNonContiguous(GspJoinTree * joinTree)
 {
   for(std::list<GspSequence *>::iterator it = sequences_.begin(); it != sequences_.end();)
   {
-    if((!(*it)->ContiguousCheck(stringSet)))
+    if((!(*it)->ContiguousCheck(joinTree)))
     {
       delete *it;
       sequences_.erase(it++);

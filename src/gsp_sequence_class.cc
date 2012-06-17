@@ -11,11 +11,13 @@
 
 #include "gsp_itemset_class.h"
 #include "gsp_sequence_class.h"
+#include "gsp_join_tree.h"
+
 #include <cmath>
 #include <sstream>
 
 /* Documented in header */
-GspSequence::GspSequence(const std::string &id) : id_(id), support_(0)
+GspSequence::GspSequence(int id) : id_(id), support_(0)
 {
 }
 
@@ -54,20 +56,14 @@ GspSequence *GspSequence::JoinSequences(GspSequence *right)
   GspSequence *rightCopy = new GspSequence(*right);
   GspSequence *ret = NULL;
 
-//  std::cout<<"\nJoining "<<leftCopy->ToString()<<" with "<<rightCopy->ToString()<<std::endl;
   leftCopy->DropFirstItem();
   rightCopy->DropLastItem();
-//  std::cout<<"Left drop: "<<leftCopy->ToString()<<std::endl;
-//  std::cout<<"Right drop: "<<rightCopy->ToString()<<std::endl;
 
   if (*leftCopy == *rightCopy)
   {
     ret = new GspSequence(*this);
     ret->AppendSequence(right);
-//    std::cout<<"Success: "<<ret->ToString()<<std::endl;
   }
-
-//  std::cout<<std::endl;
 
   delete leftCopy;
   delete rightCopy;
@@ -168,14 +164,14 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
   {
     for (GspItemset::IterType itemIter = (*it)->begin(); itemIter != (*it)->end(); ++itemIter)
     {
-      std::string item = *itemIter;
+      int item = *itemIter;
       if (itemListMap.find(item) != itemListMap.end())
       {
         itemListMap[item].insert(*it);
       }
       else
       {
-        std::set<GspItemset *, GspItemsetComparer> timestampList;
+        std::set<GspItemset *, GspItemsetTimeComparer> timestampList;
         timestampList.insert(*it);
         itemListMap[item] = timestampList;
       }
@@ -289,45 +285,53 @@ void GspSequence::CheckCandidates(int windowSize, int minGap, int maxGap)
   }
 }
 
-//TODO odkrecic
-bool GspSequence::ContiguousCheck(std::set<std::string> *stringSet)
+bool GspSequence::ContiguousCheck(GspJoinTree *joinTree)
 {
   GspSequence::IterType first = begin();
   GspSequence::IterType invalid = end();
   GspSequence::IterType last = --end();
 
-  std::stringstream sss;
-
+  GspSequence *tempSequence;
+//  std::cout<<"Cont "<<ToString()<<std::endl;
   for(GspSequence::IterType itemsetIter = first; itemsetIter != invalid; ++itemsetIter)
   {
     if(itemsetIter == first  && (*itemsetIter)->item_count() == 1)
     {
-      sss.clear();
-      sss.str("");
+      tempSequence = new GspSequence(-1);
+
       GspSequence::IterType temp = first;
       ++temp;
       while(temp !=invalid)
       {
-        sss<<(*temp)->ToString();
+        tempSequence->add_itemset(new GspItemset(**temp));
         ++temp;
       }
-      if(stringSet->find(sss.str()) == stringSet->end())
-        return false
-            ;
+//      std::cout<<tempSequence->ToString()<<std::endl;
+      if(joinTree->FindSequence(tempSequence) == false)
+      {
+        delete tempSequence;
+        return false;
+      }
+
+      delete tempSequence;
     }
     else if (itemsetIter == last && (*itemsetIter)->item_count() == 1)
     {
-      sss.clear();
-      sss.str("");
+      tempSequence = new GspSequence(-1);
       GspSequence::IterType temp = first;
       while(temp !=last)
       {
-        sss<<(*temp)->ToString();
+        tempSequence->add_itemset(new GspItemset(**temp));
         ++temp;
       }
-      if(stringSet->find(sss.str()) == stringSet->end())
-        return false
-            ;
+//      std::cout<<tempSequence->ToString()<<std::endl;
+      if(joinTree->FindSequence(tempSequence) == false)
+      {
+        delete tempSequence;
+        return false;
+      }
+
+      delete tempSequence;
     }
     else
     {
@@ -335,36 +339,31 @@ bool GspSequence::ContiguousCheck(std::set<std::string> *stringSet)
       {
         for(GspItemset::IterType exclItemIter = (*itemsetIter)->begin(); exclItemIter != (*itemsetIter)->end(); ++exclItemIter)
         {
-          sss.clear();
-          sss.str("");
+          tempSequence = new GspSequence(-1);
 
           for(GspSequence::IterType tt = first; tt != itemsetIter; ++tt)
           {
-            sss<<(*tt)->ToString();
+            tempSequence->add_itemset(new GspItemset(**tt));
           }
 
-          sss<<"{ ";
-          for(GspItemset::IterType itt = (*itemsetIter)->begin(); itt != exclItemIter; ++itt)
-          {
-            sss<<*itt<<" ";
-          }
-          GspItemset::IterType itt = exclItemIter;
-          ++itt;
-          for(; itt != (*itemsetIter)->end(); ++itt)
-          {
-            sss<<*itt<<" ";
-          }
-          sss<<"}";
+          GspItemset *tempItemset = new GspItemset(**itemsetIter);
+          tempItemset->drop_item(*exclItemIter);
+          tempSequence->add_itemset(tempItemset);
 
           GspSequence::IterType tt = itemsetIter;
           ++tt;
           for(;tt != invalid; ++tt)
           {
-            sss<<(*tt)->ToString();
+            tempSequence->add_itemset(new GspItemset(**tt));
           }
-          if(stringSet->find(sss.str()) == stringSet->end())
-            return false
-                ;
+//          std::cout<<tempSequence->ToString()<<std::endl;
+          if(joinTree->FindSequence(tempSequence) == false)
+          {
+            delete tempSequence;
+            return false;
+          }
+
+          delete tempSequence;
         }
       }
     }

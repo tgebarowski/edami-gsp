@@ -1,0 +1,208 @@
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2010.10.13)  2 MAY 2011 11:00
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**ieeecls.tex
+(./ieeecls.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, farsi, arabic, croatian, bulgarian, ukrainian, russian, czech, slov
+ak, danish, dutch, finnish, french, basque, ngerman, german, german-x-2009-06-1
+9, ngerman-x-2009-06-19, ibycus, monogreek, greek, ancientgreek, hungarian, san
+skrit, italian, latin, latvian, lithuanian, mongolian2a, mongolian, bokmal, nyn
+orsk, romanian, irish, coptic, serbian, turkish, welsh, esperanto, uppersorbian
+, estonian, indonesian, interlingua, icelandic, kurmanji, slovenian, polish, po
+rtuguese, spanish, galician, catalan, swedish, ukenglish, pinyin, loaded.
+(./ieee.cls
+Document Class `ieee' <Modified: 2000, Gregory L. Plett>.
+Document Class: ieee 2000/01/11
+\narrowcol=\skip41
+\parindentsave=\skip42
+ieee: `Final' mode selected.
+ieee: `Reprint' sub-mode selected.
+ieee: Narrow equation arrays selected.
+ieee: Narrower inline equations selected.
+ieee: No separate title page.
+ieee: (Invited Paper).
+(/usr/share/texmf-texlive/tex/latex/base/article.cls
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texmf-texlive/tex/latex/base/size10.clo
+File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip43
+\belowcaptionskip=\skip44
+\bibindent=\dimen102
+)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/etc/texmf/tex/latex/config/graphics.cfg
+File: graphics.cfg 2009/08/28 v1.8 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: dvips.def on input line 91.
+
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def
+File: dvips.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+)
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+)
+-- This is a 10 point document
+\tmpitemindent=\dimen105
+\captionindent=\skip45
+\timehh=\count87
+\timemm=\count88
+\c@numappendices=\count89
+\br=\count90
+\nb=\count91
+\tcdsav=\count92
+\tcl=\count93
+\tcd=\count94
+\tcn=\count95
+\cumtcl=\count96
+\rtside=\dimen106
+\hpic=\dimen107
+\vpic=\dimen108
+\strutilg=\dimen109
+\picwd=\dimen110
+\topheight=\dimen111
+\ilg=\dimen112
+\lpic=\dimen113
+\lwindowsep=\dimen114
+\rwindowsep=\dimen115
+\cumpar=\dimen116
+\twa=\toks15
+\la=\toks16
+\ra=\toks17
+\ha=\toks18
+\pictoc=\toks19
+\rawtext=\box26
+\holder=\box27
+\windowbox=\box28
+\wartext=\box29
+\finaltext=\box30
+\aslice=\box31
+\bslice=\box32
+\wbox=\box33
+\wstrutbox=\box34
+\picbox=\box35
+\waslice=\box36
+\wbslice=\box37
+\fslice=\box38
+)
+No file ieeecls.aux.
+\openout1 = `ieeecls.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 105.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 105.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 105.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 105.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 105.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <14.4> on input line 115.
+\tmpht=\dimen117
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 210.
+
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 210.
+ [1217
+
+
+]
+
+LaTeX Warning: Reference `sec:latex' on page 1218 undefined on input line 243.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+LaTeX Warning: Reference `sec:review' on page 1218 undefined on input line 327.
+
+
+[1218]
+
+LaTeX Warning: Citation `lamport' on page 1219 undefined on input line 378.
+
+
+LaTeX Warning: Citation `goossens' on page 1219 undefined on input line 381.
+
+[1219] [1220]
+\tmpht=\dimen118
+\tmpht=\dimen119
+ [1221]
+
+LaTeX Warning: Reference `fig-example' on page 1222 undefined on input line 739
+.
+
+
+Underfull \vbox (badness 1082) has occurred while \output is active []
+
+
+
+LaTeX Warning: Citation `lamport' on page 1222 undefined on input line 823.
+
+
+LaTeX Warning: Citation `goossens' on page 1222 undefined on input line 823.
+
+[1222] [1223] [1224
+
+] (./ieeecls.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 859 strings out of 493849
+ 9557 string characters out of 1152845
+ 69829 words of memory out of 3000000
+ 4172 multiletter control sequences out of 15000+50000
+ 13141 words of font info for 47 fonts, out of 3000000 for 9000
+ 714 hyphenation exceptions out of 8191
+ 32i,12n,23p,208b,427s stack positions out of 5000i,500n,10000p,200000b,50000s
+
+Output written on ieeecls.dvi (8 pages, 55700 bytes).

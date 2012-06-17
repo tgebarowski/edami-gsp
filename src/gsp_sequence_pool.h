@@ -17,6 +17,7 @@
 
 #include "gsp_itemset_class.h"
 #include "gsp_sequence_class.h"
+#include "gsp_join_tree.h"
 
 /* Predefinitions */
 class GspSequenceReader;
@@ -98,15 +99,20 @@ class GspSequencePool
      */
     void PrintResult(std::ostream &str);
 
-    std::set<std::string> *ToStringSet();
+//    std::set<std::string> *ToStringSet();
 
-    void DropNonContiguous(std::set<std::string> *stringSet);
+    void DropNonContiguous(GspJoinTree * joinTree);
+
+    GspJoinTree *get_join_tree()
+    {
+      return joinTree_;
+    }
 
   private:
-
     GspAlgorithm *parent_;
     std::list<GspSequence *> sequences_;
     unsigned int k_;
+    GspJoinTree *joinTree_;
 };
 
 #endif /* GSP_SEQUENCE_POOL_H_ */

@@ -41,18 +41,6 @@ GspHashTree::~GspHashTree()
 }
 
 /* Documented in header */
-int GspHashTree::Hash(const std::string &item, int upper_bound)
-{
-  int stringSum = 0;
-  int stringSize = item.size();
-
-  for(int it = 0; it < stringSize; ++it)
-    stringSum += item[it];
-
-  return stringSum % upper_bound;
-}
-
-/* Documented in header */
 void GspHashTree::CheckClientSequence(GspSequence *seq,
                                       GspAlgorithm *parent)
 {
@@ -140,8 +128,9 @@ void GspHashTree::Node::CheckClientSequence(GspSequence *seq,
                                                               backItemsetIterCopy,
                                                               it, parent);
           }
-          if(backItemsetIterCopy-- == seq->begin())
+          if(backItemsetIterCopy == seq->begin())
             break;
+		  --backItemsetIterCopy;
           backItemsetCopy = *backItemsetIterCopy;
           if (backItemsetCopy->get_timestamp() < minTime)
             break;

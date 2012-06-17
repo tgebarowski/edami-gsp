@@ -66,7 +66,10 @@ class GspHashTree
      * @param[in] item the item to calculate the hash by summing all its positions
      * @param[in[ upper_bound Upper boundary for hash value
      */
-    static int Hash(const std::string &item, int upper_bound);
+    static inline int Hash(int item, int upper_bound)
+    {
+      return item % upper_bound;
+    }
 
     /**
      * @brief Prints the representation of the tree to the standard output
@@ -219,7 +222,7 @@ class GspHashTree
             //if interior node, check whick child node to follow
 
             GspItemset *curItemSet = sequence->current_itemset();
-            std::string curItem = curItemSet->current_item();
+            int curItem = curItemSet->current_item();
             if(!curItemSet->next_item())
               sequence->next_itemset();
 
@@ -252,7 +255,7 @@ class GspHashTree
                  ++it)
             {
               GspItemset *curItemSet = (*it)->current_itemset();
-              std::string curItem = curItemSet->current_item();
+              int curItem = curItemSet->current_item();
               if(!curItemSet->next_item())
               {
                 (*it)->next_itemset();
@@ -296,7 +299,7 @@ class GspHashTree
 
         /* Interior node only */
         Node *nodes_[MAX_NODES]; /**< Nodes belonging to Node */
-        std::set<std::pair<int, std::string> > visitedSet; //history of items that visited the node
+        std::set<std::pair<int, int> > visitedSet; //history of items that visited the node
     };
 
     Node * root_; /**< HashTree root */

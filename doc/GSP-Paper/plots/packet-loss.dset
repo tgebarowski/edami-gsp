@@ -1,0 +1,9 @@
+#Number of Users in Group # Lost media packets (unicast) # Lost media packets (mcast) # Total Number of Emitted Media Packets (100 talk bursts emitted)
+50 0 0 6200
+75 10 0 6200
+100 54 0 6200
+150 129 0 6200
+200 163 12 6200
+250 17
+7 11 6200
+500 302 10 6200

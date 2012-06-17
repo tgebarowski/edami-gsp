@@ -20,7 +20,8 @@ GspAlgorithm::GspAlgorithm(GspSequenceReader *in_reader,
                            unsigned int min_support,
                            int window_size,
                            int min_gap,
-                           int max_gap)
+                           int max_gap,
+                           std::ostream *str)
   : reader_(in_reader),
     min_support_(min_support),
     window_size_(window_size),
@@ -28,7 +29,8 @@ GspAlgorithm::GspAlgorithm(GspSequenceReader *in_reader,
     max_gap_(max_gap),
     frequent_(NULL),
     candidates_(NULL),
-    finished_(false)
+    finished_(false),
+    str_(str)
 {
   std::cout << "GSP (min-support: " << ToString(min_support_)\
             << " window-size: " << ToString(window_size_)\
@@ -51,9 +53,9 @@ GspAlgorithm::~GspAlgorithm()
   delete candidates_;
 }
 
-void GspAlgorithm::PrintResult(std::ostream &str)
+void GspAlgorithm::PrintResult()
 {
-  frequent_->PrintResult(str);
+  frequent_->PrintResult(*str_);
 }
 
 /* Documented in header */
@@ -78,25 +80,34 @@ void GspAlgorithm::RunPass()
   std::cout<<"Looking for "<<frequent_->GetK() + 1<<"-frequent sequences..."<<std::endl;
   std::cout<<"Joining the "<<frequent_->GetK()<<"-frequent set... "<<std::flush;
   candidates_ = frequent_->Join();
+//  candidates_->PrintSequences();
   std::cout<<candidates_->GetSequenceCount()<<" "<<candidates_->GetK()<<"-candidates found!"<<std::endl;
-  std::cout<<"Removing candidates with nonfrequent contiguous subsequences... "<<std::flush;
-  std::set<std::string> *strRep = frequent_->ToStringSet();
-  candidates_->DropNonContiguous(strRep);
-  std::cout<<candidates_->GetSequenceCount()<<" candidates left!"<<std::endl;
-  delete strRep;
-  if (candidates_->GetSequenceCount() == 0)
-  {
-    finished_ = true;
-    delete candidates_;
-    candidates_ = NULL;
 
-    return;
+  if(candidates_->GetK() > 2)
+  {
+    std::cout<<"Removing candidates with nonfrequent contiguous subsequences... "<<std::flush;
+    candidates_->DropNonContiguous(frequent_->get_join_tree());
+//    candidates_->PrintSequences();
+    std::cout<<candidates_->GetSequenceCount()<<" candidates left!"<<std::endl;
+    if (candidates_->GetSequenceCount() == 0)
+    {
+      finished_ = true;
+      delete candidates_;
+      candidates_ = NULL;
+
+      return;
+    }
   }
+
+  delete frequent_;
+  frequent_ = NULL;
   std::cout<<"Counting support for candidates... "<<std::flush;
   candidates_->CountSupport(reader_.get());
+//  candidates_->PrintSequences();
   std::cout<<"Done!"<<std::endl;
   std::cout<<"Dropping nonfrequent candidates... "<<std::flush;
   candidates_->DropSequences();
+//  candidates_->PrintSequences();
   std::cout<<candidates_->GetSequenceCount()<<" frequent "<<candidates_->GetK()<<"-sequenced found!"<<std::endl<<std::endl;
 
   if (candidates_->GetSequenceCount() == 0)
@@ -108,8 +119,9 @@ void GspAlgorithm::RunPass()
     return;
   }
 
-  delete frequent_;
+//  delete frequent_;
   frequent_ = candidates_;
   candidates_ = NULL;
+  frequent_->PrintResult(*str_);
 }
 

@@ -48,7 +48,7 @@ GspSequence *GspFileReader::GetNextSequence()
 
   if (itemset != NULL)
   {
-    sequence = new GspSequence(id);
+    sequence = new GspSequence(ToInt(id));
   
     do
     {
@@ -94,7 +94,7 @@ GspItemset * GspFileReader::GetNextItemset(string &p_id)
       {
         for (unsigned int i = 0; i < seq_tokens->size(); i++)
         {
-          itemset->add_item((*seq_tokens)[i]);
+          itemset->add_item(ToInt((*seq_tokens)[i]));
         }
         delete seq_tokens;
       }
